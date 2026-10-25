@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ========================= */
   const productGrid = document.querySelector('.catalog__products');
   const paginationLinks = document.querySelectorAll('.pager__link');
-  const productsPerPage = 6;
+  const productsPerPage = 12;
   let currentPage = 1;
 
   function showPage(page) {
