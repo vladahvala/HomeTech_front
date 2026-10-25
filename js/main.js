@@ -1,4 +1,7 @@
-// Bootstrap: валідація форми зворотного зв'язку
+
+/* =========================
+   BOOTSTRAP: ВАЛІДАЦІЯ ФОРМИ
+========================= */
 (function () {
   'use strict';
 
@@ -17,6 +20,7 @@
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
+
   /* =========================
      ПАГІНАЦІЯ КАТАЛОГУ
   ========================= */
@@ -29,12 +33,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!productGrid) return;
 
       const productCards = productGrid.querySelectorAll('.product-card');
+
       const totalPages = Math.max(
           1,
           Math.ceil(productCards.length / productsPerPage)
       );
 
-      currentPage = Math.min(Math.max(1, page), totalPages);
+      currentPage = Math.min(
+          Math.max(1, page),
+          totalPages
+      );
 
       productCards.forEach((card, index) => {
           const isVisible =
@@ -49,11 +57,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updatePagination(totalPages) {
       paginationLinks.forEach((link) => {
-          const page = Number.parseInt(link.textContent.trim(), 10);
+          const page = Number.parseInt(
+              link.textContent.trim(),
+              10
+          );
+
           const isActive = page === currentPage;
 
-          link.classList.toggle('pager__link--active', isActive);
+          link.classList.toggle(
+              'pager__link--active',
+              isActive
+          );
+
           link.classList.toggle('active', isActive);
+
           link.setAttribute(
               'aria-current',
               isActive ? 'page' : 'false'
@@ -94,15 +111,19 @@ document.addEventListener('DOMContentLoaded', () => {
      СЛАЙДЕР
   ========================= */
   const sliderContainer = document.querySelector('.slider__track');
+
   const sliderItems = Array.from(
       document.querySelectorAll('.slider__item')
   );
+
   const previousButton = document.querySelector(
       '.slider__button--prev'
   );
+
   const nextButton = document.querySelector(
       '.slider__button--next'
   );
+
   const sliderDots = Array.from(
       document.querySelectorAll('.slider__dot')
   );
@@ -112,13 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
           item.classList.contains('slider__item--pos-3')
       );
 
-      if (currentSlide < 0) currentSlide = 0;
+      if (currentSlide < 0) {
+          currentSlide = 0;
+      }
 
       let autoSlideTimer = null;
       let startX = 0;
       let isDragging = false;
+
       const dragThreshold = 50;
 
+      // Відображення позицій слайдів
       function renderSlider() {
           sliderItems.forEach((item, index) => {
               item.classList.remove(
@@ -167,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
           goToSlide(currentSlide - 1);
       }
 
+      // Керування автоматичним перемиканням
       function stopAutoSlide() {
           if (autoSlideTimer !== null) {
               window.clearInterval(autoSlideTimer);
@@ -176,9 +202,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       function startAutoSlide() {
           stopAutoSlide();
-          autoSlideTimer = window.setInterval(nextSlide, 4000);
+
+          autoSlideTimer = window.setInterval(
+              nextSlide,
+              4000
+          );
       }
 
+      // Кнопка попереднього слайда
       if (previousButton) {
           previousButton.addEventListener('click', () => {
               previousSlide();
@@ -186,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
 
+      // Кнопка наступного слайда
       if (nextButton) {
           nextButton.addEventListener('click', () => {
               nextSlide();
@@ -193,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       }
 
+      // Точки навігації
       sliderDots.forEach((dot, index) => {
           dot.setAttribute('role', 'button');
           dot.setAttribute('tabindex', '0');
@@ -217,7 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
           isDragging = true;
           startX = event.clientX;
+
           sliderContainer.style.cursor = 'grabbing';
+
           stopAutoSlide();
       });
 
@@ -235,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               isDragging = false;
               sliderContainer.style.cursor = '';
+
               startAutoSlide();
           }
       });
@@ -244,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           isDragging = false;
           sliderContainer.style.cursor = '';
+
           startAutoSlide();
       }
 
@@ -254,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
           event.preventDefault();
       });
 
-      // Початкове відображення та автоматична зміна слайдів
+      // Початкове відображення та автоматичне перемикання
       renderSlider();
       startAutoSlide();
   }
@@ -281,7 +318,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (!dropdownMenu) return;
 
-          const shouldOpen = !dropdownMenu.classList.contains('show');
+          const shouldOpen =
+              !dropdownMenu.classList.contains('show');
 
           // Закриваємо інші категорії
           dropdownMenus.forEach((menu) => {

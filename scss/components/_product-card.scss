@@ -1,46 +1,52 @@
+
 @use '../abstracts' as *;
 
-// Блок: картка книги
+// Блок: картка товару
 .product-card {
   @include flex(column);
   width: 100%;
-  min-height: 488px;
-  padding: 20px;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px;
   box-sizing: border-box;
   text-align: center;
   background-color: $color-surface;
   border: 1px solid $color-border;
-  transition: transform $transition-base, box-shadow $transition-base,
+  transition:
+    transform $transition-base,
+    box-shadow $transition-base,
     background-color $transition-base;
 
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
     box-shadow: 0 0 10px $color-primary;
     background-color: $color-surface;
   }
 
   &__image {
-    width: 200px;
-    height: 300px;
+    display: block;
+    width: 100%;
+    max-width: 150px;
+    aspect-ratio: 1 / 1;
+    height: auto;
     margin: 0 auto;
-    object-fit: contain;
+    object-fit: cover;
     background-color: $color-white;
   }
 
-  // Назва: переноситься на другий рядок, якщо не вміщається — "..."
   &__title {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     max-width: 100%;
-    min-height: 2.4em;
-    margin: 5px 0;
+    height: calc(1.3em * 2);
+    margin: 8px 0 0;
     overflow: hidden;
-    white-space: normal;
     overflow-wrap: break-word;
+    font-size: 1.1rem;
+    line-height: 1.3;
   }
-
   &__link {
     color: black;
     text-decoration: none;
@@ -48,13 +54,12 @@
 
   &__author,
   &__price {
-    margin: 5px 0;
+    margin: 4px 0 0;
     color: $color-gray;
   }
 
-  // кнопка завжди притиснута донизу картки
   &__button {
-    margin-top: auto;
+    margin-top: 8px;
   }
 
   @include respond-down($bp-tablet) {
@@ -62,6 +67,6 @@
   }
 
   @include respond-down($bp-phone) {
-    min-height: auto;
+    min-height: 0;
   }
 }

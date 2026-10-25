@@ -1,3 +1,4 @@
+
 @use '../abstracts' as *;
 
 // Блок: каталог — ліворуч меню категорій, праворуч сітка товарів
@@ -18,13 +19,13 @@
     flex: 1;
     min-width: 0;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 37px 30px;
-    padding: 30px 40px 40px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 25px 15px;
+    padding: 30px 25px 40px;
     box-sizing: border-box;
   }
 
-  // Планшети: колонки стають рядками, товари у 2 колонки
+  // Планшети: 2 колонки
   @include respond-down($bp-tablet) {
     flex-direction: column;
     align-items: stretch;
@@ -38,14 +39,14 @@
     }
 
     &__products {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 33px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 25px;
       padding: 30px;
-      justify-items: center;
+      justify-items: stretch;
     }
   }
 
-  // Телефони: товари в одну колонку
+  // Телефони: 1 колонка
   @include respond-down($bp-phone) {
     &__products {
       grid-template-columns: 1fr;

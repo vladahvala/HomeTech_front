@@ -444,9 +444,9 @@ body {
   flex: 1;
   min-width: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 37px 30px;
-  padding: 30px 40px 40px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 25px 15px;
+  padding: 30px 25px 40px;
   box-sizing: border-box;
 }
 @media (max-width: 1024px) {
@@ -462,10 +462,10 @@ body {
     align-self: center;
   }
   .catalog__products {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 33px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px;
     padding: 30px;
-    justify-items: center;
+    justify-items: stretch;
   }
 }
 @media (max-width: 768px) {
@@ -481,8 +481,9 @@ body {
   justify-content: flex-start;
   align-items: stretch;
   width: 100%;
-  min-height: 488px;
-  padding: 20px;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px;
   box-sizing: border-box;
   text-align: center;
   background-color: #FFFFFF;
@@ -490,15 +491,18 @@ body {
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 .product-card:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   box-shadow: 0 0 10px #0D9488;
   background-color: #FFFFFF;
 }
 .product-card__image {
-  width: 200px;
-  height: 300px;
+  display: block;
+  width: 100%;
+  max-width: 150px;
+  aspect-ratio: 1/1;
+  height: auto;
   margin: 0 auto;
-  object-fit: contain;
+  object-fit: cover;
   background-color: #FFFFFF;
 }
 .product-card__title {
@@ -507,22 +511,23 @@ body {
   -webkit-line-clamp: 2;
   line-clamp: 2;
   max-width: 100%;
-  min-height: 2.4em;
-  margin: 5px 0;
+  height: 2.6em;
+  margin: 8px 0 0;
   overflow: hidden;
-  white-space: normal;
   overflow-wrap: break-word;
+  font-size: 1.1rem;
+  line-height: 1.3;
 }
 .product-card__link {
   color: black;
   text-decoration: none;
 }
 .product-card__author, .product-card__price {
-  margin: 5px 0;
+  margin: 4px 0 0;
   color: #9CA3AF;
 }
 .product-card__button {
-  margin-top: auto;
+  margin-top: 8px;
 }
 @media (max-width: 1024px) {
   .product-card {
@@ -531,7 +536,7 @@ body {
 }
 @media (max-width: 768px) {
   .product-card {
-    min-height: auto;
+    min-height: 0;
   }
 }
 
