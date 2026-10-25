@@ -1,0 +1,29 @@
+// ===== Шрифти =====
+$font-main: 'PT Sans', sans-serif;
+
+// ===== Кольори =====
+$color-primary: #00CEC8;
+$color-primary-dark: #00A09A;
+$color-primary-hover: #00b0a5;
+$color-bg: #f0f8ff;
+$color-surface: #c0d8ff;
+$color-white: #fff;
+$color-text: #333;
+$color-text-muted: #666;
+$color-gray: gray;
+$color-border: #ddd;
+$color-success: #198754;
+$color-danger: #dc3545;
+$color-focus: #86b7fe;
+
+$gradient-accent: linear-gradient(to right, orange, red);
+$gradient-accent-vertical: linear-gradient(to top, orange, red);
+
+// ===== Брейкпоінти =====
+$bp-tablet: 1024px;
+$bp-phone: 768px;
+$bp-small: 738px;
+
+// ===== Інше =====
+$transition-base: 0.3s ease-in-out;
+$container-max: 1300px;

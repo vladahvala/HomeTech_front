@@ -1,0 +1,67 @@
+@use '../abstracts' as *;
+
+// Блок: картка книги
+.product-card {
+  @include flex(column);
+  width: 100%;
+  min-height: 488px;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  transition: transform $transition-base, box-shadow $transition-base,
+    background-color $transition-base;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px $color-primary;
+    background-color: $color-surface;
+  }
+
+  &__image {
+    width: 200px;
+    height: 300px;
+    margin: 0 auto;
+    object-fit: contain;
+    background-color: $color-white;
+  }
+
+  // Назва: переноситься на другий рядок, якщо не вміщається — "..."
+  &__title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    max-width: 100%;
+    min-height: 2.4em;
+    margin: 5px 0;
+    overflow: hidden;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  &__link {
+    color: black;
+    text-decoration: none;
+  }
+
+  &__author,
+  &__price {
+    margin: 5px 0;
+    color: $color-gray;
+  }
+
+  // кнопка завжди притиснута донизу картки
+  &__button {
+    margin-top: auto;
+  }
+
+  @include respond-down($bp-tablet) {
+    max-width: 320px;
+  }
+
+  @include respond-down($bp-phone) {
+    min-height: auto;
+  }
+}

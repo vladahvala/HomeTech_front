@@ -1,0 +1,19 @@
+@use '../abstracts' as *;
+
+@font-face {
+  font-family: 'CustomFont';
+  src: url('../fonts/CustomFont.woff2') format('woff2'),
+       url('../fonts/CustomFont.woff') format('woff'),
+       url('../fonts/CustomFont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  @include flex(column);
+  font-family: $font-main;
+  font-size: 14px;
+  line-height: 22px;
+  margin: 0;
+  background-color: $color-bg;
+}

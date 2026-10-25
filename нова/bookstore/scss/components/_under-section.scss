@@ -1,0 +1,25 @@
+@use '../abstracts' as *;
+
+// Блок: нижня частина сторінки (пагінація + опис)
+.under-section {
+  width: 100%;
+  max-width: $container-max;
+  margin: 20px auto 0;
+  padding: 0 40px;
+  box-sizing: border-box;
+
+  &__line {
+    width: 100%;
+    margin: 20px 0;
+    border: 1px solid $color-primary;
+    opacity: 0.4;
+  }
+
+  @include respond-down($bp-tablet) {
+    padding: 0 30px;
+  }
+
+  @include respond-down($bp-phone) {
+    padding: 0 20px;
+  }
+}

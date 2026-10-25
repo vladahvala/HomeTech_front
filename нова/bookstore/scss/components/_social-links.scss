@@ -1,0 +1,17 @@
+@use '../abstracts' as *;
+
+// Блок: іконки соцмереж
+.social-links {
+  &__link {
+    text-decoration: none;
+    color: $color-text;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__icon {
+    font-size: 2em;
+  }
+}

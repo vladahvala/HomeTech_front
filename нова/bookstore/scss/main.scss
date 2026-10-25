@@ -1,0 +1,25 @@
+// ===== Точка входу SCSS =====
+// Структура: 7-1 pattern (спрощена), класи — за методологією BEM
+
+// Base
+@use 'base/base';
+
+// Layout
+@use 'layout/page';
+@use 'layout/header';
+@use 'layout/footer';
+
+// Components
+@use 'components/logo';
+@use 'components/contacts';
+@use 'components/menu';
+@use 'components/slider';
+@use 'components/category-menu';
+@use 'components/catalog';
+@use 'components/product-card';
+@use 'components/cart-button';
+@use 'components/pager';
+@use 'components/under-section';
+@use 'components/about';
+@use 'components/social-links';
+@use 'components/feedback-modal';

@@ -1,0 +1,71 @@
+@use '../abstracts' as *;
+
+// Блок: головне меню
+.menu {
+  @include flex(row, center);
+  width: 100%;
+  background-color: $color-primary;
+  padding: 15px 0;
+
+  &__list {
+    @include flex(row, center, center);
+    gap: 25px;
+
+    @include respond-down($bp-phone) {
+      display: grid;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-size: x-large;
+    text-decoration: none;
+    transition: color 300ms ease-in-out;
+
+    // роздільник "|" між пунктами
+    &::after {
+      content: '|';
+      margin-left: 10px;
+      padding-left: 10px;
+      color: $color-white;
+    }
+
+    &:last-child::after {
+      content: '';
+    }
+
+    &:hover .menu__text::after {
+      opacity: 1;
+    }
+
+    @include respond-down($bp-phone) {
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  &__text {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 5px;
+
+    // підкреслення при наведенні
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: $gradient-accent;
+      opacity: 0;
+      transition: opacity 300ms ease-in-out;
+    }
+  }
+}

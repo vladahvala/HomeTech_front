@@ -1,0 +1,29 @@
+@use '../abstracts' as *;
+
+// Блок: логотип з назвою компанії
+.logo {
+  @include flex(row, flex-start, center);
+
+  &__img {
+    width: 100px;
+    height: auto;
+    margin-right: 15px;
+  }
+
+  &__info {
+    @include flex(column, center);
+    height: 100px;
+  }
+
+  &__title {
+    font-size: 20px;
+    margin: 0;
+    color: $color-text;
+  }
+
+  &__slogan {
+    font-size: 10px;
+    margin: 15px 0 0;
+    color: $color-text-muted;
+  }
+}

@@ -1,0 +1,74 @@
+@use '../abstracts' as *;
+
+// Блок: модальне вікно зворотного зв'язку (поверх Bootstrap modal)
+.feedback-modal {
+  // fade-ефект: селектори підсилені, щоб перебити Bootstrap
+  &.fade &__dialog {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  &.fade.show &__dialog {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  &__content {
+    padding: 1.5rem;
+    border: none;
+    border-radius: 10px;
+    background-color: $color-white;
+    box-shadow: 0 5px 20px rgba(0, 206, 200, 0.5);
+  }
+
+  &__header {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  &__close {
+    filter: brightness(0.5);
+  }
+
+  &__footer {
+    justify-content: flex-end;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  // Поля форми
+  &__input {
+    border-radius: 8px;
+
+    &:focus {
+      border-color: $color-focus;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    // стани валідації (клас .was-validated додає JS)
+    .was-validated &:valid {
+      border-color: $color-success;
+      box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+    }
+
+    .was-validated &:invalid {
+      border-color: $color-danger;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+
+  // Кнопки
+  &__submit {
+    border: none;
+    background-color: $color-primary;
+
+    &:hover {
+      background-color: $color-primary-hover;
+    }
+  }
+
+  &__cancel {
+    border: none;
+  }
+}

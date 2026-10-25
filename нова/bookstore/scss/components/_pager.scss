@@ -1,0 +1,27 @@
+@use '../abstracts' as *;
+
+// Блок: пагінація
+// (не називаємо .pagination, щоб не конфліктувати з Bootstrap)
+.pager {
+  @include flex(row, center);
+  margin: 20px 0 0;
+  text-align: center;
+
+  &__link {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 5px;
+    border: 1px solid $color-border;
+    text-decoration: none;
+    color: $color-text;
+
+    &:hover {
+      background-color: $color-surface;
+    }
+
+    &--active {
+      font-weight: bold;
+      background-color: $color-surface;
+    }
+  }
+}

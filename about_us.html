@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--=============== SHORTCUT ICON ===============-->
+  <link rel="shortcut icon" href="https://eu-central-1.linodeobjects.com/list/production/349708/logo/big/65ec5a9158f9c.png" type="image/x-icon">
+
+  <!--=============== GOOGLE FONTS ===============-->
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+  <!--=============== REMIXICONS ===============-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+
+  <!--=============== BOOTSTRAP ===============-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!--=============== CSS ===============-->
+  <link rel="stylesheet" href="about_us.css">
+
+  <title>About - An example of about us page</title>
+</head>
+<body>
+  <!-- Scroll top button -->
+  <div class="scroll-top">
+    <i class="ri-arrow-up-line"></i>
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="-1 -1 102 102">
+      <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 0.0228267; transition: stroke-dashoffset 10ms linear;"/>
+    </svg>
+  </div>
+  
+    <header>
+      <!-- Logo -->
+        <div class="logo">
+            <img src="https://eu-central-1.linodeobjects.com/list/production/349708/logo/big/65ec5a9158f9c.png" alt="Logo company">
+            <div class="company-info">
+                <h1>Затишна книгарня</h1>
+                <p>Затишна атмосфера та книги для вас!</p>
+            </div>
+        </div>
+        <div class="phone_nums">
+            <p>+38(098)192-53-12</p>
+            <p>+38(084)137-33-12</p>
+            <h3 class="underlined">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                    Зворотний зв'язок
+                </a>
+            </h3>
+        </div>
+    </header>
+        
+    <!-- Feedback window -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feedbackModalLabel">Зворотний зв'язок</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="your-server-endpoint" method="POST" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Ваше ім'я</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="invalid-feedback">Вкажіть ваше ім'я.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                            <div class="invalid-feedback">Вкажіть ваш номер телефону.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="invalid-feedback">Поле є обов'язковим для заповнення.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Повідомлення</label>
+                            <textarea class="form-control" id="message" name="message" rows="4"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                            <button type="submit" class="btn btn-primary">Надіслати</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+
+    <div class="page-content">
+        <!-- Menu -->
+        <div class="menu">
+            <div class="menu__links">
+                <a href="book_store.html"><span>Головна</span></a>
+                <a><span>Каталог</span></a>
+                <a><span>Доставка та оплата</span></a>
+                <a><span>Прайс-лист</span></a>
+                <a><span>Контакти</span></a>
+            </div>
+        </div>
+
+      <!-- Banner -->
+      <section class="banner">
+        <div class="container">
+          <h1>Про нас</h1>
+          <p>Затишна книгарня, що переїхала з Херсону до центра Рівного!</p>
+        </div>     
+      </section>
+
+      <!-- First -->
+      <section class="first">
+        <div class="container">
+          <p>«Затишна книгарня» — неймовірно затишне місце, яке з першої ж секунди здається рідним. Це найбільший книжковий простір у місті Рівне!
+            Цей казковий світ для справжніх поціновувачів літератури створило подружжя відомих видавців із Херсона, яким важливо, аби українці не втрачали зв’язок із прекрасним навіть у такі складні та темні часи.</p>
+            <p>Завітайте до <strong>«Затишної книгарні»</strong> та пориньте в досконалий простір якісної сучасної літератури:</p>
+            <ul>
+              <li>книги топових українських авторів;</li>
+              <li>книги популярних зарубіжних письменників;</li>
+              <li>великий вибір дитячої літератури та книжок для підлітків;</li>
+              <li>нон-фікшн — література для саморозвитку, психологія, бізнес, здоров‘я;</li>
+              <li>трохи канцтоварів та прекрасний асортимент блокнотів (розмаїття кольорів, текстур, розмірів та обкладинок).</li>
+            </ul>
+          <button class="learn_more">Дізнатися більше ⇒</button>
+        </div>
+      </section>
+
+      <!-- Second -->
+      <section class="second">
+        <div class="container">
+          <div class="left-img">
+            <img src="https://kultura.rayon.in.ua/storage/cache/images/upload/topics/35/2022-12/01-T5s6qGXQ/700x1000-PHOTO-2022-12-01-16-01-13__6388b82b95e9c.webp" alt="Person">
+          </div>
+          <div class="right-content">
+            <h2>Історія відкриття книгарні</h2>
+            <p>Подружжя Михайло та Вікторія Новицькі – професійні видавці з Херсону. До початку повномасштабного вторгнення РФ в Україну пара володіла в Херсоні друкарнею та медіахолдингом, який видав найбільший тираж газет в нашій країні.
+                Все це Новицьким довелося залишити в перший день повномасштабної війни.
+            </p>
+            <p>Михайло та Вікторія добре розуміли, що у разі окупації міста, на них, як на медійників загарбники розпочнуть полювання. 
+                Покидали Херсон 24 лютого, пообіді, коли бої були вже на підступах до міста.</p>
+            <button class="learn_more">Дізнатися більше ⇒</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Third -->
+      <section class="third">
+        <div class="container">
+          <div class="left-content">
+            <h2>Асортимент</h2>
+            <p>Продаж книг для дітей та дорослих. Книги топових українських авторів, популярних зарубіжних письменників. Великий вибір дитячої літератури та книжок для підлітків. Нон-фікшн (література для саморозвитку, психологія, бізнес, здоров‘я).</p>
+            <button class="learn_more">Зв'яжіться з нами ⇒</button>
+          </div>
+          <div class="right-img">
+            <img src="https://kultura.rayon.in.ua/storage/cache/images/upload/topics/35/2022-12/01-T5s6qGXQ/700x1000-PHOTO-2022-12-01-16-01-17__6388b82f3dd46.webp" alt="photo">
+          </div>
+        </div>    
+      </section>  
+
+      <!-- Fourth -->
+      <section class="four">
+        <div class="container">
+          <div class="member">
+            <img src="https://ukurier.gov.ua/media/images/2023-1/%D0%9D%D0%BE%D0%B2%D0%B8%D1%86%D1%8C%D0%BA%D1%96.jpg" alt="photo">
+            <h3>Засновники</h3>
+            <p>Михайло та Вікторія Новицькі — професійні видавці, які переїхали з Херсону до Рівного. У центрі міста вони відкрили "Затишну книгарню". Тепер заклад переїхав у нове приміщення із більшою площею. </p>
+            <div class="social">
+              <a title="Instagram" href="index.html">
+                <i class="ri-instagram-fill"></i>
+              </a>
+              <a title="Facebook" href="index.html">
+                <i class="ri-facebook-box-fill"></i>
+              </a>
+              <a title="Twitter" href="index.html">
+                <i class="ri-twitter-fill"></i>
+              </a>
+            </div>
+          </div>  
+          <div class="member">
+            <img src="https://cdn4.suspilne.media/images/resize/900x0.1/a803ba45e9737774.jpg" alt="photo">
+            <h3>Символ книгарні</h3>
+            <p>У книгарні є символ - чорний кіт, який прибився до дверей, а тепер живе всередині. Подружжя сміється, що місцевий улюбленець відпрацьовує корм, приводячи до книгарні клієнтів.</p>
+            <div class="social">
+              <a title="Instagram" href="index.html">
+                <i class="ri-instagram-fill"></i>
+              </a>
+              <a title="Facebook" href="index.html">
+                <i class="ri-facebook-box-fill"></i>
+              </a>
+              <a title="Twitter" href="index.html">
+                <i class="ri-twitter-fill"></i>
+              </a>
+            </div> 
+          </div>  
+        </div>   
+      </section>  
+
+      <!-- Fifth -->
+      <section class="five">
+        <div class="container">
+          <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/ov0zQcJ9QCE?si=51Jj3dfgBf1q6f0z" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>      
+        </div>    
+      </section>  
+
+      <!-- Sixth -->
+      <section class="six">
+        <div class="container">
+          <h4>Подарункові сертифікати</h4>
+          <div class="center-img">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaCXnHvaVA2btwPX8ympOqtWV_U0NJvyY8rQ&s" alt="discount cupons">
+          </div>
+          <p><i>Важкий вибір подарунків більше не завадить порадувати близьких людей приємними речима. Подарункові сертифікати на книжки спростять задачу і неодмінно принесуть приємні емоції отримувачу. Маємо різні номінали на будь-які бажанки!</i></p>
+          <button class="learn_more">Зв'яжіться з нами ⇒</button>
+        </div>
+      </section>
+    </div>
+  
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-container">
+          <div class="footer-column">
+              <h3>Контакти</h3>
+              <p>+38(098)192-53-12</p>
+              <p>+38(084)137-33-12</p>
+              <p>info@cozybookstore.com</p>
+          </div>
+          <div class="footer-column">
+              <h3>Інформація</h3>
+              <ul>
+                  <li><a href="about_us.html">Про нас</a></li>
+                  <li><a href="#">Доставка та оплата</a></li>
+                  <li><a href="#">Прайс-лист</a></li>
+                  <li><a href="#">Контакти</a></li>
+              </ul>
+          </div>
+          <div class="footer-column">
+              <h3>Ми в соцмережах</h3>
+                  <div class="social-links">
+                      <a href="#"><i class="ri-facebook-fill"></i></a>
+                      <a href="#"><i class="ri-instagram-line"></i></a>
+                      <a href="#"><i class="ri-twitter-fill"></i></a>
+                  </div>
+          </div>
+      </div>
+      <div class="footer-bottom">
+          <p>&copy; 2023 Затишна книгарня. Всі права захищені.</p>
+      </div>
+    </footer> 
+
+
+    <!--=============== SCRIPT ===============-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="about_us.js"></script>
+       
+</script>
+
+  </body>
+</html>

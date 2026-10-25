@@ -1,0 +1,23 @@
+@use '../abstracts' as *;
+
+// Блок: кнопка "Додати в кошик"
+// (не називаємо .btn, щоб не конфліктувати з Bootstrap)
+.cart-button {
+  gap: 8px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: $color-primary;
+  color: $color-white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $gradient-accent;
+  }
+
+  &__icon {
+    font-size: 18px;
+  }
+}

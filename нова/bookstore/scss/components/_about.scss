@@ -1,0 +1,37 @@
+@use '../abstracts' as *;
+
+// Блок: "Про нас" і "Наші переваги" у дві колонки
+.about {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 40px;
+  align-items: start;
+  text-align: left;
+
+  &__column {
+    width: 100%;
+  }
+
+  &__title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+
+  &__text {
+    font-size: 1em;
+    line-height: 1.6;
+    text-align: justify;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  &__list {
+    padding-left: 20px;
+    font-size: 1em;
+    line-height: 1.6;
+  }
+
+  @include respond-down($bp-phone) {
+    grid-template-columns: 1fr;
+  }
+}

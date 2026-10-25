@@ -1,0 +1,55 @@
+@use '../abstracts' as *;
+
+// Блок: футер
+.footer {
+  background-color: $color-surface;
+  padding: 20px 0;
+  margin-top: 40px;
+  font-size: 14px;
+  color: $color-text;
+
+  &__container {
+    @include flex(row, space-around);
+    max-width: 980px;
+    margin: 0 auto;
+
+    @include respond-down($bp-tablet) {
+      padding-left: 50px;
+    }
+  }
+
+  &__column {
+    flex: 1;
+    margin: 0 10px;
+  }
+
+  &__title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+  }
+
+  &__item {
+    margin-bottom: 5px;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: $color-text;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__bottom {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid $color-primary;
+  }
+}
