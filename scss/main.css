@@ -59,7 +59,7 @@ body {
 }
 
 .footer {
-  background-color: #FFFFFF;
+  background-color: #14B8A6;
   padding: 20px 0;
   margin-top: 40px;
   font-size: 14px;
@@ -98,7 +98,7 @@ body {
   color: #F3F4F6;
 }
 .footer__link:hover {
-  color: #0D9488;
+  color: #5EEAD4;
 }
 .footer__bottom {
   text-align: center;
@@ -732,7 +732,7 @@ body {
   color: #F3F4F6;
 }
 .social-links__link:hover {
-  color: #0D9488;
+  color: #5EEAD4;
 }
 .social-links__icon {
   font-size: 2em;
