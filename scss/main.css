@@ -637,7 +637,6 @@ body {
   color: #FFFFFF;
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
 }
 .cart-button:hover {
   background: linear-gradient(to right, #0D9488, #2DD4BF);
