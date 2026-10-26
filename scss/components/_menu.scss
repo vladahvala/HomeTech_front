@@ -1,11 +1,28 @@
+
 @use '../abstracts' as *;
 
 // Блок: головне меню
 .menu {
-  @include flex(row, center);
+  @include flex(row, space-between, center);
   width: 100%;
+  box-sizing: border-box;
   background-color: $color-primary;
-  padding: 15px 0;
+  padding: 15px 24px;
+  gap: 24px;
+
+  // Логотип ліворуч
+  &__logo {
+    flex-shrink: 0;
+
+    .logo__title {
+      color: $color-white;
+      margin-bottom: 5px;
+    }
+
+    .logo__slogan {
+      color: $color-white;
+    }
+  }
 
   &__list {
     @include flex(row, center, center);
@@ -22,11 +39,11 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    font-size: x-large;
+    font-size: 25px;
     text-decoration: none;
     transition: color 300ms ease-in-out;
 
-    // роздільник "|" між пунктами
+    // Роздільник "|" між пунктами
     &::after {
       content: '|';
       margin-left: 10px;
@@ -53,9 +70,9 @@
     position: relative;
     display: inline-block;
     padding-bottom: 5px;
-    color: $color-text;
+    color: $color-white;
 
-    // підкреслення при наведенні
+    // Підкреслення при наведенні
     &::after {
       content: '';
       display: block;
@@ -67,6 +84,20 @@
       background: $gradient-accent;
       opacity: 0;
       transition: opacity 300ms ease-in-out;
+    }
+  }
+
+  @include respond-down($bp-phone) {
+    flex-wrap: wrap;
+    justify-content: center;
+
+    &__logo {
+      width: 100%;
+      justify-content: center;
+    }
+
+    &__list {
+      width: 100%;
     }
   }
 }

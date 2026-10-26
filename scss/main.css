@@ -23,41 +23,6 @@ body {
   align-items: stretch;
 }
 
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #F3F4F6;
-  padding: 20px 0 30px;
-  border-bottom: 2px solid #D1D5DB;
-}
-.header__logo {
-  margin-left: 100px;
-}
-.header__contacts {
-  margin-right: 100px;
-  flex-shrink: 1;
-  max-width: 50%;
-  overflow: hidden;
-  white-space: nowrap;
-}
-@media (max-width: 768px) {
-  .header {
-    display: grid;
-    justify-content: center;
-  }
-  .header__logo {
-    margin: 0;
-    justify-content: center;
-  }
-  .header__contacts {
-    margin-right: 0;
-    max-width: 100%;
-    margin-top: 23px;
-  }
-}
-
 .footer {
   background-color: #14B8A6;
   padding: 20px 0;
@@ -131,9 +96,8 @@ body {
   color: #F3F4F6;
 }
 .logo__slogan {
-  font-size: 10px;
-  margin: 15px 0 0;
-  color: #6B7280;
+  color: #000000;
+  font-size: 16px;
 }
 
 .contacts {
@@ -170,11 +134,23 @@ body {
 .menu {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: stretch;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
+  box-sizing: border-box;
   background-color: #0D9488;
-  padding: 15px 0;
+  padding: 15px 24px;
+  gap: 24px;
+}
+.menu__logo {
+  flex-shrink: 0;
+}
+.menu__logo .logo__title {
+  color: #FFFFFF;
+  margin-bottom: 5px;
+}
+.menu__logo .logo__slogan {
+  color: #FFFFFF;
 }
 .menu__list {
   display: flex;
@@ -194,7 +170,7 @@ body {
   position: relative;
   display: inline-flex;
   align-items: center;
-  font-size: x-large;
+  font-size: 25px;
   text-decoration: none;
   transition: color 300ms ease-in-out;
 }
@@ -219,7 +195,7 @@ body {
   position: relative;
   display: inline-block;
   padding-bottom: 5px;
-  color: #F3F4F6;
+  color: #FFFFFF;
 }
 .menu__text::after {
   content: "";
@@ -232,6 +208,19 @@ body {
   background: linear-gradient(to right, #0D9488, #2DD4BF);
   opacity: 0;
   transition: opacity 300ms ease-in-out;
+}
+@media (max-width: 768px) {
+  .menu {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .menu__logo {
+    width: 100%;
+    justify-content: center;
+  }
+  .menu__list {
+    width: 100%;
+  }
 }
 
 .slider {
