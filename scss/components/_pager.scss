@@ -14,14 +14,15 @@
     border: 1px solid $color-border;
     text-decoration: none;
     color: $color-text;
+    background-color: $color-primary;
 
     &:hover {
-      background-color: $color-surface;
+      background-color:  $color-primary-hover;
     }
 
     &--active {
       font-weight: bold;
-      background-color: $color-surface;
+      background-color: $color-primary-dark;
     }
   }
 }

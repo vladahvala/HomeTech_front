@@ -661,13 +661,14 @@ body {
   border: 1px solid #D1D5DB;
   text-decoration: none;
   color: #F3F4F6;
+  background-color: #0D9488;
 }
 .pager__link:hover {
-  background-color: #FFFFFF;
+  background-color: #2DD4BF;
 }
 .pager__link--active {
   font-weight: bold;
-  background-color: #FFFFFF;
+  background-color: #14B8A6;
 }
 
 .under-section {
