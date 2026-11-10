@@ -77,6 +77,13 @@
     }
   }
 
+  // замість кнопок покупки — для адміністратора
+  &__admin-note {
+    margin: 0;
+    font-size: 15px;
+    color: #4b5563;
+  }
+
   &__unavailable {
     margin: 0;
     font-size: 16px;

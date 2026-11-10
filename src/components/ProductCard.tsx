@@ -2,6 +2,7 @@ import type { MouseEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { ADD_RESULT_LABELS, useCart } from '../context/CartContext';
 import type { AddToCartResult } from '../context/CartContext';
+import { useCanShop } from '../hooks/useCanShop';
 import { useTemporaryValue } from '../hooks/useTemporaryValue';
 import type { ProductSummary } from '../types';
 import { formatPrice } from '../utils/format';
@@ -11,6 +12,7 @@ import ProductImage from './ProductImage';
 
 export default function ProductCard({ product }: { product: ProductSummary }) {
   const { addToCart } = useCart();
+  const canShop = useCanShop();
   const navigate = useNavigate();
   const [feedback, showFeedback] = useTemporaryValue<AddToCartResult>();
   const productUrl = `/product/${product.id}`;
@@ -36,19 +38,21 @@ export default function ProductCard({ product }: { product: ProductSummary }) {
       </h3>
       <AvailabilityBadge availability={product.availability} />
       <p className="product-card__price">{formatPrice(product.price)}</p>
-      <button
-        className="product-card__button cart-button"
-        type="button"
-        disabled={!orderable}
-        onClick={() => showFeedback(addToCart(product))}
-      >
-        <i
-          className={`cart-button__icon ${
-            feedback === 'added' ? 'ri-check-line' : 'ri-shopping-cart-line'
-          }`}
-        />{' '}
-        {buttonText}
-      </button>
+      {canShop && (
+        <button
+          className="product-card__button cart-button"
+          type="button"
+          disabled={!orderable}
+          onClick={() => showFeedback(addToCart(product))}
+        >
+          <i
+            className={`cart-button__icon ${
+              feedback === 'added' ? 'ri-check-line' : 'ri-shopping-cart-line'
+            }`}
+          />{' '}
+          {buttonText}
+        </button>
+      )}
     </article>
   );
 }

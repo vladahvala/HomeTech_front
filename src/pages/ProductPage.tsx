@@ -11,6 +11,7 @@ import { ADD_RESULT_LABELS, MAX_QUANTITY, useCart } from '../context/CartContext
 import type { AddToCartResult } from '../context/CartContext';
 import { useAsync } from '../hooks/useAsync';
 import { getCategoryPath, useCategories } from '../hooks/useCategories';
+import { useCanShop } from '../hooks/useCanShop';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useTemporaryValue } from '../hooks/useTemporaryValue';
 import type { ProductDetails } from '../types';
@@ -36,6 +37,7 @@ export default function ProductPage() {
 
 function ProductDetailsView({ product }: { product: ProductDetails }) {
   const { addToCart, buyNow } = useCart();
+  const canShop = useCanShop();
   const navigate = useNavigate();
   const { data: categories } = useCategories();
   const [quantity, setQuantity] = useState(1);
@@ -86,7 +88,11 @@ function ProductDetailsView({ product }: { product: ProductDetails }) {
             <AvailabilityBadge availability={product.availability} />
           </div>
 
-          {orderable ? (
+          {!canShop ? (
+            <p className="product-page__admin-note">
+              Ви переглядаєте товар як адміністратор — кошик і замовлення доступні покупцям.
+            </p>
+          ) : orderable ? (
             <div className="product-page__buy">
               <QuantityPicker value={quantity} onChange={setQuantity} max={MAX_QUANTITY} />
               <button
@@ -106,7 +112,7 @@ function ProductDetailsView({ product }: { product: ProductDetails }) {
             </p>
           )}
 
-          {orderable && quantity > 1 && (
+          {canShop && orderable && quantity > 1 && (
             <p className="product-page__sum">Разом: {formatPrice(product.price * quantity)}</p>
           )}
 

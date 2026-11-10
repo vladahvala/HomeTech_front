@@ -3,8 +3,11 @@ import type { NavLink } from '../types';
 import CartWidget from './CartWidget';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
+import { useCanShop } from '../hooks/useCanShop';
 
 export default function Menu({ links }: { links: NavLink[] }) {
+  const canShop = useCanShop();
+
   return (
     <nav className="menu">
       <Logo className="menu__logo" />
@@ -17,7 +20,8 @@ export default function Menu({ links }: { links: NavLink[] }) {
       </div>
       <div className="menu__actions">
         <UserMenu />
-        <CartWidget />
+        {/* адміністратору кошик не надано (FUN-01) */}
+        {canShop && <CartWidget />}
       </div>
     </nav>
   );

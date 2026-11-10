@@ -8,6 +8,7 @@ import ProductImage from '../components/ProductImage';
 import QuantityPicker from '../components/QuantityPicker';
 import { MAX_QUANTITY, useCart } from '../context/CartContext';
 import { isBlocking, useCartCheck } from '../hooks/useCartCheck';
+import { useCanShop } from '../hooks/useCanShop';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { formatPrice } from '../utils/format';
 
@@ -33,8 +34,23 @@ export default function CartPage() {
     acceptPrices();
   }, [priceChanges, acceptPrices]);
 
+  const canShop = useCanShop();
+
   // сюди повертає оформлення, якщо товар зник або закінчився (А4)
   const cameFromCheckout = (location.state as { blocked?: boolean } | null)?.blocked === true;
+
+  if (!canShop) {
+    return (
+      <main className="cart-page">
+        <Breadcrumbs items={[{ label: 'Головна', to: '/' }, { label: 'Кошик' }]} />
+        <h2 className="cart-page__title">Кошик</h2>
+        <Notice kind="info" title="Кошик доступний покупцям">
+          Ви увійшли як адміністратор, а замовлення оформлює Клієнт.{' '}
+          <Link to="/admin/orders">Перейти до замовлень магазину</Link>
+        </Notice>
+      </main>
+    );
+  }
 
   if (items.length === 0) {
     return (
