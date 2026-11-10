@@ -9,10 +9,13 @@ import { CartProvider } from './context/CartContext';
 import { footerLinks, mainMenu, socialLinks } from './data/site';
 import AccountPage from './pages/AccountPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
+import CartPage from './pages/CartPage';
 import CategoryPage from './pages/CategoryPage';
+import CheckoutPage from './pages/CheckoutPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
 import ProductPage from './pages/ProductPage';
 import RegisterPage from './pages/RegisterPage';
 import SearchPage from './pages/SearchPage';
@@ -32,6 +35,10 @@ export default function App() {
             <Route path="/catalog/:slug" element={<CategoryPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            {/* оформлення саме показує «Увійдіть» гостю й повідомлення адміну (А1, А2) */}
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order/success" element={<OrderSuccessPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
 

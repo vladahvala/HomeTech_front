@@ -10,6 +10,8 @@ export const MAX_QUANTITY = 99;
 export const MAX_LINES = 50;
 
 export type AddToCartResult = 'added' | 'cart_full' | 'unavailable';
+/** «Купити»: якщо товар уже в кошику, кількість не змінюється (UC-CRT-02) */
+export type BuyResult = AddToCartResult | 'already_in_cart';
 
 interface CartContextValue {
   items: CartItem[];
@@ -17,7 +19,13 @@ interface CartContextValue {
   totalPrice: number;
   /** Додає товар або збільшує кількість наявної позиції */
   addToCart: (product: ProductSummary, quantity?: number) => AddToCartResult;
+  /** Купити: додає товар, лише якщо його ще немає в кошику */
+  buyNow: (product: ProductSummary, quantity?: number) => BuyResult;
+  /** Нова кількість позиції, 1–99 (UC-CRT-03) */
+  setQuantity: (productId: number, quantity: number) => void;
   removeFromCart: (productId: number) => void;
+  /** Оновлює збережені дані товарів (ціну, наявність) після звірки з сервером */
+  refreshProducts: (products: ProductSummary[]) => void;
   clearCart: () => void;
 }
 
@@ -78,6 +86,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [items],
   );
 
+  const buyNow = useCallback(
+    (product: ProductSummary, quantity = 1): BuyResult =>
+      items.some((item) => item.product.id === product.id)
+        ? 'already_in_cart'
+        : addToCart(product, quantity),
+    [items, addToCart],
+  );
+
+  const setQuantity = useCallback((productId: number, quantity: number) => {
+    const safe = Math.min(Math.max(1, Math.round(quantity)), MAX_QUANTITY);
+    setItems((current) =>
+      current.map((item) => (item.product.id === productId ? { ...item, quantity: safe } : item)),
+    );
+  }, []);
+
+  const refreshProducts = useCallback((products: ProductSummary[]) => {
+    if (products.length === 0) return;
+    setItems((current) =>
+      current.map((item) => {
+        const fresh = products.find((product) => product.id === item.product.id);
+        return fresh ? { ...item, product: fresh } : item;
+      }),
+    );
+  }, []);
+
   const removeFromCart = useCallback((productId: number) => {
     setItems((current) => current.filter((item) => item.product.id !== productId));
   }, []);
@@ -90,10 +123,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       totalCount: items.reduce((sum, item) => sum + item.quantity, 0),
       totalPrice: items.reduce((sum, item) => sum + item.quantity * item.product.price, 0),
       addToCart,
+      buyNow,
+      setQuantity,
       removeFromCart,
+      refreshProducts,
       clearCart,
     }),
-    [items, addToCart, removeFromCart, clearCart],
+    [items, addToCart, buyNow, setQuantity, removeFromCart, refreshProducts, clearCart],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

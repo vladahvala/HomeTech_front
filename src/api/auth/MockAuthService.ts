@@ -23,6 +23,7 @@ const SEED_ACCOUNTS: MockAccount[] = [
     fullName: 'Адміністратор Магазину',
     phone: '+380441234567',
     role: 'admin',
+    deliveryAddress: null,
     isActive: true,
   },
   {
@@ -32,11 +33,27 @@ const SEED_ACCOUNTS: MockAccount[] = [
     fullName: 'Олена Коваль',
     phone: '+380671234567',
     role: 'client',
+    deliveryAddress: 'м. Рівне, вул. Соборна, 16, кв. 5',
     isActive: true,
   },
 ];
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Хто «увійшов» у тимчасовому режимі — для інших моків (замовлення тощо) */
+export function getMockSessionUser(): User | null {
+  try {
+    const id = Number(localStorage.getItem(SESSION_KEY));
+    const stored = localStorage.getItem(ACCOUNTS_KEY);
+    const accounts: MockAccount[] = stored ? JSON.parse(stored) : SEED_ACCOUNTS;
+    const account = accounts.find((item) => item.id === id && item.isActive);
+    if (!account) return null;
+    const { password: _password, isActive: _isActive, ...user } = account;
+    return { ...user, deliveryAddress: user.deliveryAddress ?? null };
+  } catch {
+    return null;
+  }
+}
 
 export class MockAuthService implements AuthService {
   async getCurrentUser(): Promise<User | null> {
@@ -88,6 +105,7 @@ export class MockAuthService implements AuthService {
       fullName: data.fullName.trim(),
       phone: normalizePhone(data.phone),
       role: 'client', // реєстрація завжди створює Клієнта (SEC-02)
+      deliveryAddress: null,
       isActive: true,
     };
 
@@ -121,6 +139,7 @@ export class MockAuthService implements AuthService {
 
   /** Пароль і службові поля назовні не віддаємо — як і справжній сервер */
   private toUser({ password, isActive, ...user }: MockAccount): User {
-    return user;
+    // облікові записи, збережені до появи адреси, отримують null
+    return { ...user, deliveryAddress: user.deliveryAddress ?? null };
   }
 }

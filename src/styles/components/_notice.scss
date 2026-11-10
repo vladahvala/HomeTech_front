@@ -1,0 +1,68 @@
+@use '../abstracts' as *;
+
+// Блок: повідомлення в рамці (інформація, попередження, помилка, успіх)
+.notice {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid;
+  border-left-width: 5px;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+
+  &--info {
+    border-color: #93c5fd;
+    background-color: #eff6ff;
+    color: #1e3a8a;
+  }
+
+  &--warning {
+    border-color: #f59e0b;
+    background-color: #fffbeb;
+    color: #78350f;
+  }
+
+  &--error {
+    border-color: $color-danger;
+    background-color: #fef2f2;
+    color: #991b1b;
+  }
+
+  &--success {
+    border-color: $color-success;
+    background-color: #f0fdf4;
+    color: #14532d;
+  }
+
+  &__title {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  &__body p {
+    margin: 0 0 8px;
+  }
+
+  &__list {
+    margin: 0 0 8px;
+    padding-left: 20px;
+  }
+
+  &__actions {
+    @include flex(row, flex-start, center);
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin-top: 10px;
+
+    .cart-button {
+      text-decoration: none;
+    }
+  }
+
+  &__link,
+  a {
+    color: inherit;
+    font-weight: 700;
+  }
+}

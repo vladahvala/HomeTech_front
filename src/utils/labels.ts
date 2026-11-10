@@ -1,4 +1,12 @@
-import type { Availability, CharacteristicType, SortOrder } from '../types';
+import type {
+  Availability,
+  CharacteristicType,
+  DeliveryInterval,
+  DeliveryMethod,
+  OrderStatus,
+  PaymentMethod,
+  SortOrder,
+} from '../types';
 
 export const AVAILABILITY_LABELS: Record<Availability, string> = {
   in_stock: 'В наявності',
@@ -54,3 +62,41 @@ export function pluralize(count: number, [one, few, many]: [string, string, stri
   if (last >= 2 && last <= 4) return few;
   return many;
 }
+
+// ===== Доставка, оплата, статуси замовлення =====
+
+export const DELIVERY_LABELS: Record<DeliveryMethod, string> = {
+  pickup: 'Самовивіз з магазину',
+  courier: 'Кур’єр по місту',
+  nova_poshta: 'Нова пошта',
+};
+
+export const PAYMENT_LABELS: Record<PaymentMethod, string> = {
+  cash_on_receipt: 'Готівкою при отриманні',
+  card_on_receipt: 'Карткою при отриманні',
+  cash_on_delivery: 'Накладений платіж',
+  invoice: 'Безготівковий розрахунок за рахунком',
+};
+
+/** Допустимі способи оплати для кожної доставки — таблиця 3.4 */
+export const PAYMENTS_BY_DELIVERY: Record<DeliveryMethod, PaymentMethod[]> = {
+  pickup: ['cash_on_receipt', 'card_on_receipt', 'invoice'],
+  courier: ['cash_on_receipt', 'card_on_receipt', 'invoice'],
+  nova_poshta: ['cash_on_delivery', 'invoice'],
+};
+
+export const INTERVAL_LABELS: Record<DeliveryInterval, string> = {
+  '09-12': '09:00–12:00',
+  '12-15': '12:00–15:00',
+  '15-18': '15:00–18:00',
+  '18-21': '18:00–21:00',
+};
+
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  new: 'Нове',
+  processing: 'В обробці',
+  assembled: 'Зібране',
+  shipped: 'Відправлене',
+  delivered: 'Поставлене',
+  cancelled: 'Скасоване',
+};

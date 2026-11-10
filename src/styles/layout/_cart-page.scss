@@ -1,0 +1,188 @@
+@use '../abstracts' as *;
+
+// Блок: сторінка кошика (UC-CRT-03)
+.cart-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 30px 40px;
+  box-sizing: border-box;
+
+  &__title {
+    margin: 12px 0 20px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  &__footer {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 2px solid $color-border;
+  }
+
+  &__total {
+    margin: 0 0 12px;
+    font-size: 20px;
+    text-align: right;
+
+    strong {
+      color: $color-primary;
+      font-size: 26px;
+    }
+  }
+
+  &__check-error {
+    margin: 0 0 12px;
+    text-align: right;
+    color: $color-danger;
+  }
+
+  &__actions {
+    @include flex(row, flex-end, center);
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+
+  &__continue {
+    color: $color-primary;
+    font-weight: 700;
+  }
+
+  &__checkout {
+    padding: 12px 28px;
+    font-size: 17px;
+    text-decoration: none;
+  }
+
+  @include respond-down($bp-phone) {
+    padding: 16px 16px 30px;
+
+    &__title {
+      font-size: 22px;
+    }
+
+    &__actions {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      text-align: center;
+    }
+  }
+}
+
+// Блок: позиції кошика
+.cart-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: opacity $transition-base;
+
+  // поки звіряємо з сервером, список трохи притлумлений
+  &--checking {
+    opacity: 0.7;
+  }
+}
+
+.cart-line {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) auto 130px auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid $color-border;
+
+  // «Немає» або недоступний: позначено й вилучено із суми
+  &--blocked {
+    padding-left: 10px;
+    border-left: 4px solid $color-danger;
+    background-color: #fef2f2;
+
+    .cart-line__image,
+    .cart-line__name {
+      opacity: 0.6;
+    }
+  }
+
+  &__image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  &__info {
+    @include flex(column, flex-start, flex-start);
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__name {
+    color: $color-text-muted;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+
+  &__price {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  &__old-price {
+    color: #6b7280;
+  }
+
+  &__excluded {
+    font-size: 14px;
+    color: $color-danger;
+  }
+
+  &__sum {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  &__remove {
+    padding: 8px;
+    border: none;
+    background: none;
+    color: #6b7280;
+    font: inherit;
+    font-size: 15px;
+    cursor: pointer;
+
+    &:hover {
+      color: $color-danger;
+    }
+  }
+
+  // Телефони: фото й назва зверху, кількість і сума під ними
+  @include respond-down($bp-phone) {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 10px 12px;
+
+    &__image {
+      width: 64px;
+      height: 64px;
+    }
+
+    &__quantity {
+      grid-column: 1 / 3;
+    }
+
+    &__sum {
+      grid-column: 1 / 2;
+      text-align: left;
+    }
+
+    &__remove {
+      grid-column: 2 / 3;
+      justify-self: end;
+    }
+  }
+}

@@ -1,0 +1,34 @@
+@use '../abstracts' as *;
+
+// Блок: кнопка «Купити» — поруч з «Додати в кошик», тому контурна
+.buy-button {
+  padding: 12px 28px;
+  border: 2px solid $color-primary;
+  border-radius: 6px;
+  background-color: $color-surface;
+  color: $color-primary;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color $transition-base,
+    color $transition-base;
+
+  &:hover {
+    background-color: $color-primary;
+    color: $color-white;
+  }
+}
+
+// Кнопка, що виглядає як посилання («Спробувати ще раз» у тексті)
+.link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: $color-primary;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}

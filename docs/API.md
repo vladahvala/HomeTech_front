@@ -103,6 +103,55 @@ ProductDetails = ProductSummary & {
 - `imageUrl` — власне фото, інакше фото з прайсу Katran, інакше `null` (фронт покаже заглушку, FUN-10).
 - Повний перелік типів — `src/types/index.ts`.
 
+## Кошик і оформлення замовлення (UC-CRT-03, UC-ORD-01)
+
+Кошик живе на пристрої (localStorage), сервер лише звіряє його й створює замовлення.
+
+| Запит | Тіло | Відповідь |
+|---|---|---|
+| `POST /api/cart/check` | `{ productIds: number[] }` | `{ productId, product: ProductSummary \| null }[]` — `null`, якщо товар видалено чи приховано |
+| `POST /api/orders` | `CreateOrderRequest` | `201 Order` |
+
+### `CreateOrderRequest`
+
+```ts
+{
+  items: { productId, quantity, price }[],   // price — ціна, яку бачив Клієнт
+  recipient: { fullName, phone },
+  delivery:
+    | { method: 'pickup' }
+    | { method: 'courier', address, date: 'YYYY-MM-DD', interval: '09-12' | '12-15' | '15-18' | '18-21' }
+    | { method: 'nova_poshta', city, branch },
+  payment: 'cash_on_receipt' | 'card_on_receipt' | 'cash_on_delivery' | 'invoice',
+  comment: string,                            // до 1000 символів, може бути порожнім
+  idempotencyKey: string                      // REL-02, див. нижче
+}
+```
+
+### Що перевіряє сервер (кроки 11–13)
+
+- Користувач увійшов → інакше `401 UNAUTHORIZED`; деактивований → `403 ACCOUNT_DISABLED`; адміністратор → `403 ADMIN_CANNOT_ORDER`.
+- Поля — за таблицею 3.5, дата кур'єра — від завтра до +14 днів за київським часом, оплата — за таблицею 3.4 → інакше `400 VALIDATION_ERROR` з `fields` (ключі: `fullName`, `phone`, `address`, `date`, `interval`, `city`, `branch`, `payment`, `comment`).
+- Кожен товар видимий, не «Немає», і `price` збігається з поточною ціною → інакше `409 CART_CHANGED` (фронт заново звіряє кошик і показує зміни).
+- Сума — за поточними цінами; номер `DT-000001` по порядку; у позиціях зберігаються назва й ціна; перший запис історії `null → new`.
+- **`idempotencyKey`**: якщо замовлення з таким ключем у цього користувача вже є — повернути його, не створюючи нового (подвійне натискання, повтор після обриву зв'язку).
+- Усе в одній транзакції: при збої не має лишитися частково створеного замовлення (REL-01).
+
+### `Order`
+
+```ts
+{
+  id, number: 'DT-000001', status: 'new' | 'processing' | 'assembled' | 'shipped' | 'delivered' | 'cancelled',
+  createdAt: ISO, items: { productId, name, price, quantity }[], total,
+  recipient: { fullName, phone }, delivery, payment, comment: string | null,
+  history: { from: OrderStatus | null, to, at: ISO, by: string, note: string | null }[]
+}
+```
+
+### Користувач
+
+До `User` додано `deliveryAddress: string | null` — адреса за замовчуванням, яку фронт підставляє в оформлення (UC-ACC-04).
+
 ## Далі
 
-Оформлення замовлення, кабінет клієнта й адмінка — опишемо тут у тому ж форматі, коли до них дійдемо.
+Кабінет клієнта (мої замовлення, скасування, профіль, пароль) і адмінка — опишемо тут у тому ж форматі.

@@ -1,0 +1,68 @@
+@use '../abstracts' as *;
+
+// Блок: підсумок замовлення — позиції, доставка, оплата, сума
+.order-summary {
+  padding: 18px;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  background-color: $color-surface;
+
+  &__title {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item,
+  &__row,
+  &__total {
+    @include flex(row, space-between, flex-start);
+    gap: 16px;
+    margin: 0;
+    padding: 8px 0;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__name {
+    flex: 1;
+  }
+
+  &__quantity {
+    color: #4b5563;
+    white-space: nowrap;
+  }
+
+  &__sum {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__row {
+    font-size: 14px;
+
+    span:first-child {
+      color: #4b5563;
+    }
+
+    span:last-child {
+      text-align: right;
+    }
+  }
+
+  &__total {
+    border-bottom: none;
+    padding-top: 12px;
+    font-size: 18px;
+
+    strong {
+      color: $color-primary;
+      font-size: 22px;
+    }
+  }
+}

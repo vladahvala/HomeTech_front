@@ -1,0 +1,117 @@
+@use '../abstracts' as *;
+
+// Блок: сторінки оформлення й «Замовлення оформлено»
+.checkout-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 30px 40px;
+  box-sizing: border-box;
+
+  &__title {
+    margin: 12px 0 20px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  &__summary {
+    max-width: 640px;
+  }
+
+  &__comment {
+    color: #4b5563;
+  }
+
+  @include respond-down($bp-phone) {
+    padding: 16px 16px 30px;
+
+    &__title {
+      font-size: 22px;
+    }
+  }
+}
+
+// Блок: форма оформлення — ліворуч поля, праворуч підсумок
+.checkout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 32px;
+  align-items: start;
+
+  &__section {
+    min-width: 0;
+    margin: 0 0 20px;
+    padding: 18px 20px 4px;
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    background-color: $color-surface;
+  }
+
+  &__legend {
+    float: left; // щоб легенда була всередині рамки, як заголовок
+    width: 100%;
+    margin: 0 0 12px;
+    font-size: 19px;
+    font-weight: 700;
+
+    + * {
+      clear: both;
+    }
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+
+  &__hint {
+    margin: 0 0 14px;
+    font-size: 14px;
+    color: #4b5563;
+  }
+
+  &__comment {
+    resize: vertical;
+  }
+
+  &__aside {
+    position: sticky;
+    top: 16px;
+  }
+
+  &__notice {
+    margin: 14px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6b7280;
+  }
+
+  &__submit {
+    width: 100%;
+    padding: 14px;
+    font-size: 17px;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  @include respond-down($bp-tablet) {
+    grid-template-columns: 1fr;
+
+    &__aside {
+      position: static;
+    }
+  }
+
+  @include respond-down($bp-phone) {
+    &__row {
+      grid-template-columns: 1fr;
+    }
+
+    &__section {
+      padding: 14px 14px 2px;
+    }
+  }
+}

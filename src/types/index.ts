@@ -121,6 +121,73 @@ export interface CartItem {
   quantity: number;
 }
 
+// ===== Замовлення (UC-ORD-01) =====
+
+export type DeliveryMethod = 'pickup' | 'courier' | 'nova_poshta';
+
+export type PaymentMethod = 'cash_on_receipt' | 'card_on_receipt' | 'cash_on_delivery' | 'invoice';
+
+/** Інтервали доставки кур'єром (FUN-06) */
+export type DeliveryInterval = '09-12' | '12-15' | '15-18' | '18-21';
+
+/** Статуси й дозволені переходи — таблиця 3.3 */
+export type OrderStatus = 'new' | 'processing' | 'assembled' | 'shipped' | 'delivered' | 'cancelled';
+
+export type DeliveryInfo =
+  | { method: 'pickup' }
+  | { method: 'courier'; address: string; date: string; interval: DeliveryInterval }
+  | { method: 'nova_poshta'; city: string; branch: string };
+
+/** Позиція замовлення: назва й ціна зафіксовані на момент оформлення (FUN-04) */
+export interface OrderItem {
+  productId: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+export interface OrderStatusChange {
+  from: OrderStatus | null;
+  to: OrderStatus;
+  /** ISO-дата */
+  at: string;
+  /** Хто змінив: «Клієнт», «Адміністратор» або ПІБ */
+  by: string;
+  note: string | null;
+}
+
+export interface Order {
+  id: number;
+  /** DT-000001 (FUN-03) */
+  number: string;
+  status: OrderStatus;
+  createdAt: string;
+  items: OrderItem[];
+  total: number;
+  recipient: { fullName: string; phone: string };
+  delivery: DeliveryInfo;
+  payment: PaymentMethod;
+  comment: string | null;
+  history: OrderStatusChange[];
+}
+
+export interface CreateOrderRequest {
+  /** price — ціна, яку бачив Клієнт; сервер звіряє її з поточною (крок 11) */
+  items: { productId: number; quantity: number; price: number }[];
+  recipient: { fullName: string; phone: string };
+  delivery: DeliveryInfo;
+  payment: PaymentMethod;
+  comment: string;
+  /** Той самий ключ для повторного підтвердження — сервер поверне вже створене замовлення (REL-02) */
+  idempotencyKey: string;
+}
+
+/** Відповідь звірки кошика: поточні дані товару або null, якщо товар видалено чи приховано */
+export interface CartCheckLine {
+  productId: number;
+  product: ProductSummary | null;
+}
+
 // ===== Користувачі =====
 
 /** Ролі за SRS: «Клієнт» і «Адміністратор». Гість — це просто відсутність входу */
@@ -132,6 +199,8 @@ export interface User {
   fullName: string;
   phone: string;
   role: UserRole;
+  /** Адреса доставки за замовчуванням — підставляється в оформлення (UC-ACC-04) */
+  deliveryAddress: string | null;
 }
 
 export interface LoginData {

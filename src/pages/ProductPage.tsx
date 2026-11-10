@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { catalogService } from '../api';
 import { ApiError } from '../api/ApiError';
 import AvailabilityBadge from '../components/AvailabilityBadge';
@@ -35,11 +35,19 @@ export default function ProductPage() {
 }
 
 function ProductDetailsView({ product }: { product: ProductDetails }) {
-  const { addToCart } = useCart();
+  const { addToCart, buyNow } = useCart();
+  const navigate = useNavigate();
   const { data: categories } = useCategories();
   const [quantity, setQuantity] = useState(1);
   const [feedback, showFeedback] = useTemporaryValue<AddToCartResult>(2500);
   const orderable = canOrder(product.availability);
+
+  // UC-CRT-02: додаємо, якщо товару ще немає в кошику, і переходимо до оформлення
+  const handleBuy = () => {
+    const result = buyNow(product, quantity);
+    if (result === 'added' || result === 'already_in_cart') navigate('/checkout');
+    else showFeedback(result);
+  };
 
   const crumbs = [
     { label: 'Головна', to: '/' },
@@ -87,6 +95,9 @@ function ProductDetailsView({ product }: { product: ProductDetails }) {
                 onClick={() => showFeedback(addToCart(product, quantity))}
               >
                 <i className="cart-button__icon ri-shopping-cart-line" /> Додати в кошик
+              </button>
+              <button className="buy-button product-page__buy-now" type="button" onClick={handleBuy}>
+                Купити
               </button>
             </div>
           ) : (

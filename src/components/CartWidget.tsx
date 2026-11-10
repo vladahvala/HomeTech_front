@@ -76,6 +76,9 @@ export default function CartWidget() {
               <p className="cart__total">
                 Разом: <strong>{formatPrice(totalPrice)}</strong>
               </p>
+              <Link className="cart-button cart__open" to="/cart" onClick={close}>
+                Перейти до кошика
+              </Link>
             </>
           )}
         </div>

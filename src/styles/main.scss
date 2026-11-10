@@ -11,6 +11,8 @@
 @use 'layout/auth-page';
 @use 'layout/account-page';
 @use 'layout/category-page';
+@use 'layout/cart-page';
+@use 'layout/checkout-page';
 
 // Components
 @use 'components/logo';
@@ -40,3 +42,7 @@
 @use 'components/catalog-toolbar';
 @use 'components/filters';
 @use 'components/specs';
+@use 'components/notice';
+@use 'components/order-summary';
+@use 'components/choice-group';
+@use 'components/buy-button';

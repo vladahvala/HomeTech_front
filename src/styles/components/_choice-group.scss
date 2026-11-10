@@ -1,0 +1,37 @@
+@use '../abstracts' as *;
+
+// Блок: група перемикачів (спосіб доставки, спосіб оплати)
+.choice-group {
+  @include flex(column);
+  gap: 8px;
+  margin-bottom: 14px;
+
+  &__option {
+    @include flex(row, flex-start, center);
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    background-color: $color-surface;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color $transition-base;
+
+    &:hover {
+      border-color: $color-primary;
+    }
+
+    // обраний варіант помітний не лише кольором, а й товщиною рамки
+    &:has(input:checked) {
+      border-color: $color-primary;
+      box-shadow: inset 0 0 0 1px $color-primary;
+    }
+
+    input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: $color-primary;
+    }
+  }
+}

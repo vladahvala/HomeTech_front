@@ -140,6 +140,14 @@
     }
   }
 
+  // «Перейти до кошика»
+  &__open {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    text-decoration: none;
+  }
+
   &__total {
     margin: 8px 0 0;
     padding-top: 10px;

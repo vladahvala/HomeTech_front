@@ -53,5 +53,11 @@
     font-size: 13px;
     line-height: 1.4;
     color: #6b7280; // темніший за $color-gray, щоб контраст був ≥ 4,5:1 (WCAG AA)
+
+    // лічильник символів, коли перевищено ліміт
+    &--over {
+      color: $color-danger;
+      font-weight: 700;
+    }
   }
 }

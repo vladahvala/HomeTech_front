@@ -11,6 +11,8 @@ interface AuthContextValue {
   login: (data: LoginData) => Promise<User>;
   register: (data: RegisterData) => Promise<User>;
   logout: () => Promise<void>;
+  /** Сервер сказав, що сесії вже немає (401) — забуваємо користувача без запиту (А9) */
+  forgetUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -57,9 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const forgetUser = useCallback(() => setUser(null), []);
+
   const value = useMemo(
-    () => ({ user, status, login, register, logout }),
-    [user, status, login, register, logout],
+    () => ({ user, status, login, register, logout, forgetUser }),
+    [user, status, login, register, logout, forgetUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
