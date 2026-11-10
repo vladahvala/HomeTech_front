@@ -13,6 +13,9 @@ import PasswordPage from './pages/account/PasswordPage';
 import ProfilePage from './pages/account/ProfilePage';
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminCategoryPage from './pages/admin/AdminCategoryPage';
+import AdminClientPage from './pages/admin/AdminClientPage';
+import AdminClientsPage from './pages/admin/AdminClientsPage';
+import AdminImportPage from './pages/admin/AdminImportPage';
 import AdminManufacturersPage from './pages/admin/AdminManufacturersPage';
 import AdminOrderPage from './pages/admin/AdminOrderPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
@@ -159,6 +162,38 @@ export default function App() {
               element={
                 <RequireAuth role="admin">
                   <AdminManufacturersPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/clients"
+              element={
+                <RequireAuth role="admin">
+                  <AdminClientsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/clients/new"
+              element={
+                <RequireAuth role="admin">
+                  <AdminClientPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/clients/:id"
+              element={
+                <RequireAuth role="admin">
+                  <AdminClientPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/import"
+              element={
+                <RequireAuth role="admin">
+                  <AdminImportPage />
                 </RequireAuth>
               }
             />

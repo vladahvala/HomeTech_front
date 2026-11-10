@@ -9,53 +9,21 @@ import {
 } from '../../validation/rules';
 import type { FieldErrors } from '../ApiError';
 import { ApiError } from '../ApiError';
+import { loadAccounts as loadStoredAccounts, saveAccounts as saveStoredAccounts, SESSION_KEY } from '../mock/accountStore';
+import type { MockAccount } from '../mock/accountStore';
 import type { AuthService } from './AuthService';
 
 // ТИМЧАСОВО, поки немає бекенду. Облікові записи й «сесія» живуть у localStorage.
 // Паролі тут зберігаються відкрито — це лише імітація, справжній бекенд хешує їх (SEC-01).
-
-interface MockAccount extends User {
-  password: string;
-  isActive: boolean;
-}
-
-const ACCOUNTS_KEY = 'hometech-mock-accounts';
-const SESSION_KEY = 'hometech-mock-session';
-
-/** Тестові облікові записи (адміністратора за SRS створює лише системний адміністратор) */
-const SEED_ACCOUNTS: MockAccount[] = [
-  {
-    id: 1,
-    email: 'admin@domtech.ua',
-    password: 'Admin12345',
-    fullName: 'Адміністратор Магазину',
-    phone: '+380441234567',
-    role: 'admin',
-    deliveryAddress: null,
-    isActive: true,
-  },
-  {
-    id: 2,
-    email: 'client@domtech.ua',
-    password: 'Client12345',
-    fullName: 'Олена Коваль',
-    phone: '+380671234567',
-    role: 'client',
-    deliveryAddress: 'м. Рівне, вул. Соборна, 16, кв. 5',
-    isActive: true,
-  },
-];
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Обліковий запис за id — для моків адмінки (контакти клієнта в замовленні) */
 export function getMockUserById(id: number): User | null {
   try {
-    const stored = localStorage.getItem(ACCOUNTS_KEY);
-    const accounts: MockAccount[] = stored ? JSON.parse(stored) : SEED_ACCOUNTS;
-    const account = accounts.find((item) => item.id === id);
+    const account = loadStoredAccounts().find((item) => item.id === id);
     if (!account) return null;
-    const { password: _password, isActive: _isActive, ...user } = account;
+    const { password: _password, isActive: _isActive, createdAt: _createdAt, ...user } = account;
     return { ...user, deliveryAddress: user.deliveryAddress ?? null };
   } catch {
     return null;
@@ -66,11 +34,10 @@ export function getMockUserById(id: number): User | null {
 export function getMockSessionUser(): User | null {
   try {
     const id = Number(localStorage.getItem(SESSION_KEY));
-    const stored = localStorage.getItem(ACCOUNTS_KEY);
-    const accounts: MockAccount[] = stored ? JSON.parse(stored) : SEED_ACCOUNTS;
-    const account = accounts.find((item) => item.id === id && item.isActive);
+    // деактивований обліковий запис втрачає доступ з наступного запиту (SEC-03)
+    const account = loadStoredAccounts().find((item) => item.id === id && item.isActive);
     if (!account) return null;
-    const { password: _password, isActive: _isActive, ...user } = account;
+    const { password: _password, isActive: _isActive, createdAt: _createdAt, ...user } = account;
     return { ...user, deliveryAddress: user.deliveryAddress ?? null };
   } catch {
     return null;
@@ -129,6 +96,7 @@ export class MockAuthService implements AuthService {
       role: 'client', // реєстрація завжди створює Клієнта (SEC-02)
       deliveryAddress: null,
       isActive: true,
+      createdAt: new Date().toISOString(),
     };
 
     this.saveAccounts([...accounts, account]);
@@ -201,20 +169,15 @@ export class MockAuthService implements AuthService {
   }
 
   private loadAccounts(): MockAccount[] {
-    try {
-      const stored = localStorage.getItem(ACCOUNTS_KEY);
-      return stored ? (JSON.parse(stored) as MockAccount[]) : SEED_ACCOUNTS;
-    } catch {
-      return SEED_ACCOUNTS;
-    }
+    return loadStoredAccounts();
   }
 
   private saveAccounts(accounts: MockAccount[]): void {
-    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+    saveStoredAccounts(accounts);
   }
 
   /** Пароль і службові поля назовні не віддаємо — як і справжній сервер */
-  private toUser({ password, isActive, ...user }: MockAccount): User {
+  private toUser({ password, isActive, createdAt, ...user }: MockAccount): User {
     // облікові записи, збережені до появи адреси, отримують null
     return { ...user, deliveryAddress: user.deliveryAddress ?? null };
   }

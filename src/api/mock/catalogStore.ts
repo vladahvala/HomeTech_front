@@ -12,7 +12,8 @@ import type {
 import { ApiError } from '../ApiError';
 import { CATEGORIES, CHARACTERISTICS, MANUFACTURERS, PRODUCTS } from './catalogData';
 
-const CATALOG_KEY = 'hometech-mock-catalog-v1';
+// v2: шаблони імпорту стали регулярними виразами — старі демо-дані скидаються
+const CATALOG_KEY = 'hometech-mock-catalog-v2';
 
 export interface StoredCategory extends Category {
   hidden: boolean;
@@ -126,12 +127,13 @@ export function toProductSummary(product: StoredProduct): ProductSummary {
 
 // ----- Стартовий стан -----
 
+// регулярні вирази для початку назви в прайсі (без урахування регістру), UC-SYS-02
 const IMPORT_TEMPLATES: Record<string, string> = {
   fridges: 'Холодильник',
-  kettles: 'Електрочайник, Чайник',
-  microwaves: 'Мікрохвильова піч, Мікрохвильовка',
+  kettles: '(Електро)?чайник',
+  microwaves: 'Мікрохвильов(а|і) піч|Мікрохвильовка',
   hoods: 'Витяжка',
-  vacuums: 'Пилосос',
+  vacuums: '(Робот-)?пилосос',
 };
 
 function seedCatalog(): CatalogState {

@@ -238,8 +238,8 @@ function CategoryForm({ category, categories, onSaved, onError }: CategoryFormPr
         label="Шаблон імпорту"
         value={importTemplate}
         error={errors.importTemplate}
-        placeholder="Електрочайник, Чайник"
-        hint="Слова через кому, з яких починається назва товару в прайсі Katran. Новий товар з такою назвою імпорт додасть сюди прихованим."
+        placeholder="(Електро)?чайник"
+        hint="Регулярний вираз для початку назви товару в прайсі Katran, без урахування регістру. Новий товар з такою назвою імпорт додасть сюди прихованим."
         onChange={(event) => {
           setImportTemplate(event.target.value);
           setErrors((current) => withoutField(current, 'importTemplate'));

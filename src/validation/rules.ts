@@ -7,6 +7,7 @@ import type {
   CategoryInput,
   Characteristic,
   CharacteristicInput,
+  ClientInput,
   ManufacturerInput,
   ProductInput,
   RegisterData,
@@ -294,7 +295,7 @@ export function validateCategoryInput(input: CategoryInput): FieldErrors {
   }
   const order = validateOrder(input.order);
   if (order) errors.order = order;
-  const template = lengthError(input.importTemplate ?? '', 'Шаблон задовгий', TEXT_VALUE_MAX);
+  const template = validateImportTemplate(input.importTemplate ?? '');
   if (template) errors.importTemplate = template;
   return errors;
 }
@@ -333,4 +334,52 @@ export function validateManufacturerInput(input: ManufacturerInput): FieldErrors
   const country = lengthError(input.country ?? '', 'Країна задовга', SHORT_TEXT_MAX);
   if (country) errors.country = country;
   return errors;
+}
+
+/** Шаблон імпорту — регулярний вираз для початку назви товару в прайсі (до 200 символів) */
+export function validateImportTemplate(value: string): string | null {
+  const template = value.trim();
+  if (!template) return null;
+  if (template.length > TEXT_VALUE_MAX) return `Шаблон задовгий: максимум ${TEXT_VALUE_MAX} символів.`;
+  try {
+    new RegExp(template, 'iu');
+  } catch {
+    return 'Це не правильний регулярний вираз. Перевірте дужки, наприклад: (Електро)?чайник.';
+  }
+  return null;
+}
+
+/** Чи відповідає назва з прайсу шаблону: збіг з початку назви, без урахування регістру */
+export function matchesImportTemplate(template: string, name: string): boolean {
+  try {
+    return new RegExp(`^(?:${template.trim()})`, 'iu').test(name.trim());
+  } catch {
+    return false;
+  }
+}
+
+// ===== Адмінка: клієнти (UC-ADM-CLI-02, 03) =====
+
+export function validateClientInput(input: ClientInput): FieldErrors {
+  const checks: [string, string | null][] = [
+    ['email', validateEmail(input.email)],
+    ['fullName', validateFullName(input.fullName)],
+    ['phone', validatePhone(input.phone)],
+    ['deliveryAddress', validateOptionalAddress(input.deliveryAddress ?? '')],
+  ];
+  const errors: FieldErrors = {};
+  for (const [field, message] of checks) if (message) errors[field] = message;
+  return errors;
+}
+
+// ===== Імпорт прайсу (UC-IMP-01) =====
+
+export const PRICE_FILE_MAX_BYTES = 20 * 1024 * 1024;
+
+/** Файл прайсу: CSV або ZIP з одним CSV, до 20 МБ (таблиця 3.5) */
+export function validatePriceFile(file: { name: string; size: number }): string | null {
+  if (!/\.(csv|zip)$/i.test(file.name)) return 'Оберіть файл прайсу у форматі CSV або ZIP-архів з одним CSV.';
+  if (file.size > PRICE_FILE_MAX_BYTES) return 'Файл завеликий: максимум 20 МБ.';
+  if (file.size === 0) return 'Файл порожній. Перевірте вивантаження прайсу.';
+  return null;
 }

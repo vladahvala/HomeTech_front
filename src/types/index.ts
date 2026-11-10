@@ -304,7 +304,7 @@ export type CharacteristicValue = string | number | boolean;
 /** Категорія для адміністратора — разом із прихованими */
 export interface AdminCategory extends Category {
   hidden: boolean;
-  /** Слова, з яких починається назва товару в прайсі, через кому (UC-IMP-01) */
+  /** Регулярний вираз для початку назви товару в прайсі (UC-IMP-01) */
   importTemplate: string | null;
   /** Невидалені товари саме цієї категорії */
   productsCount: number;
@@ -424,4 +424,74 @@ export interface ProductInput {
   assemblyCountry: string;
   assemblyCity: string;
   values: Record<number, CharacteristicValue>;
+}
+
+// ===== Адмінка: клієнти (UC-ADM-CLI-01…04) =====
+
+/** Активні або видалені (деактивовані) облікові записи */
+export type ClientStatus = 'active' | 'deleted';
+
+export interface AdminClientListItem {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  /** Дата реєстрації (ISO) */
+  registeredAt: string;
+  ordersCount: number;
+  isActive: boolean;
+}
+
+/** Клієнт з адресою й усіма замовленнями */
+export interface AdminClient extends AdminClientListItem {
+  deliveryAddress: string | null;
+  orders: OrderListItem[];
+}
+
+export interface AdminClientQuery {
+  /** ПІБ, email або телефон */
+  search?: string;
+  status: ClientStatus;
+  page: number;
+}
+
+/** Що Адміністратор вводить у формі клієнта (UC-ADM-CLI-02, 03) */
+export interface ClientInput {
+  email: string;
+  fullName: string;
+  phone: string;
+  deliveryAddress: string | null;
+}
+
+/** Тимчасовий пароль із 12 символів — сервер показує його один раз */
+export interface TemporaryPassword {
+  temporaryPassword: string;
+}
+
+export interface CreatedClient extends TemporaryPassword {
+  client: AdminClient;
+}
+
+// ===== Імпорт прайсу Katran (UC-IMP-01) =====
+
+export interface ImportRowError {
+  /** Номер рядка у файлі (1 — заголовок) */
+  row: number;
+  message: string;
+}
+
+/** Звіт імпорту */
+export interface ImportReport {
+  fileName: string;
+  startedAt: string;
+  finishedAt: string;
+  added: number;
+  updated: number;
+  skipped: number;
+  /** Рядків з помилками */
+  errors: number;
+  /** Товарів, яких немає у файлі й переведених у «Немає» */
+  outOfStock: number;
+  /** Перші рядки з помилками — щоб Адміністратор міг виправити файл */
+  errorRows: ImportRowError[];
 }
