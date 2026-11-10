@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { SITE_NAME } from '../data/site';
+import { SELLER, SITE_NAME } from '../data/site';
 import type { NavLink, SocialLink } from '../types';
 
 export default function Footer({ links, socialLinks }: { links: NavLink[]; socialLinks: SocialLink[] }) {
@@ -8,9 +8,21 @@ export default function Footer({ links, socialLinks }: { links: NavLink[]; socia
       <div className="footer__container">
         <div className="footer__column">
           <h3 className="footer__title">Контакти</h3>
-          <p className="footer__text">{SITE_NAME} — магазин техніки</p>
-          <p className="footer__text">Телефон: додайте свій номер</p>
-          <p className="footer__text">Email: додайте свою адресу</p>
+          {/* найменування, адреса й телефон продавця на кожній сторінці (FUN-11) */}
+          <p className="footer__text">{SELLER.name}</p>
+          <p className="footer__text">Адреса: {SELLER.address}</p>
+          <p className="footer__text">
+            Телефон:{' '}
+            <a className="footer__link" href={SELLER.phoneHref}>
+              {SELLER.phone}
+            </a>
+          </p>
+          <p className="footer__text">
+            Email:{' '}
+            <a className="footer__link" href={`mailto:${SELLER.email}`}>
+              {SELLER.email}
+            </a>
+          </p>
         </div>
         <div className="footer__column">
           <h3 className="footer__title">Інформація</h3>

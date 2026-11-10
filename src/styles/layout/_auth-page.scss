@@ -39,7 +39,7 @@
     margin: 4px 0 16px;
     font-size: 13px;
     line-height: 1.5;
-    color: #6b7280;
+    color: #4b5563;
   }
 
   &__submit {
@@ -70,7 +70,7 @@
     border-radius: 8px;
     font-size: 13px;
     line-height: 1.5;
-    color: #6b7280;
+    color: #4b5563;
   }
 
   @include respond-down($bp-phone) {

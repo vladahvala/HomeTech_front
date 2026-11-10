@@ -16,11 +16,23 @@
     @include respond-down($bp-tablet) {
       padding-left: 50px;
     }
+
+    // телефони: колонки одна під одною, щоб нічого не виходило за екран (USB-01)
+    @include respond-down($bp-phone) {
+      flex-direction: column;
+      padding: 0 16px;
+    }
   }
 
   &__column {
     flex: 1;
+    min-width: 0;
     margin: 0 10px;
+    overflow-wrap: anywhere;
+
+    @include respond-down($bp-phone) {
+      margin: 0 0 12px;
+    }
   }
 
   &__title {

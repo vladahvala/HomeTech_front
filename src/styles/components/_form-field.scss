@@ -28,7 +28,7 @@
     &:focus {
       outline: none;
       border-color: $color-primary;
-      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.25);
     }
 
     &--invalid {
@@ -52,7 +52,7 @@
     margin: 4px 0 0;
     font-size: 13px;
     line-height: 1.4;
-    color: #6b7280; // темніший за $color-gray, щоб контраст був ≥ 4,5:1 (WCAG AA)
+    color: #4b5563; // контраст ≥ 4,5:1 і на сірому тлі сторінки (WCAG AA)
 
     // лічильник символів, коли перевищено ліміт
     &--over {

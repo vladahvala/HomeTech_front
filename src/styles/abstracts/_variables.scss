@@ -2,9 +2,11 @@
 $font-main: 'PT Sans', sans-serif;
 
 // ===== Кольори =====
-$color-primary: #0D9488;
-$color-primary-dark: #14B8A6;
-$color-primary-hover: #2DD4BF;
+// Відтінки бірюзового підібрано під контраст тексту ≥ 4,5:1 (WCAG 2.2 AA, USB-02):
+// білий текст на $color-primary — 5,5:1, на $color-primary-dark — 7,6:1
+$color-primary: #0F766E;
+$color-primary-dark: #115E59;
+$color-primary-hover: #134E4A;
 
 $color-bg: #F3F4F6;
 $color-surface: #FFFFFF;
@@ -12,7 +14,7 @@ $color-white: #FFFFFF;
 
 $color-text: #F3F4F6;
 $color-text-muted: #000000;
-$color-gray: #9CA3AF;
+$color-gray: #4B5563; // вторинний текст: 7,6:1 на білому
 $color-border: #D1D5DB;
 
 $color-success: #198754;
@@ -20,8 +22,8 @@ $color-danger: #DC3545;
 $color-focus: #5EEAD4;
 
 // ===== Градієнти =====
-$gradient-accent: linear-gradient(to right, #0D9488, #2DD4BF);
-$gradient-accent-vertical: linear-gradient(to top, #0D9488, #2DD4BF);
+$gradient-accent: linear-gradient(to right, #115E59, #0F766E);
+$gradient-accent-vertical: linear-gradient(to top, #115E59, #0F766E);
 
 // ===== Брейкпоінти =====
 $bp-desktop: 1440px;
