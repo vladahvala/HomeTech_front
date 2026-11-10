@@ -1,0 +1,15 @@
+@use '../abstracts' as *;
+
+// Кореневий елемент React займає місце body як flex-контейнер
+#root {
+  @include flex(column);
+}
+
+body {
+  @include flex(column);
+  font-family: $font-main;
+  font-size: 14px;
+  line-height: 22px;
+  margin: 0;
+  background-color: $color-bg;
+}
