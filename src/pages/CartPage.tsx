@@ -58,7 +58,7 @@ export default function CartPage() {
         <Breadcrumbs items={[{ label: 'Головна', to: '/' }, { label: 'Кошик' }]} />
         <h2 className="cart-page__title">Кошик</h2>
         <ListState kind="empty" text="Кошик порожній. Оберіть товари в каталозі.">
-          <Link className="cart-button list-state__retry" to="/#catalog">
+          <Link className="cart-button list-state__retry" to="/catalog">
             До каталогу
           </Link>
         </ListState>
@@ -158,7 +158,7 @@ export default function CartPage() {
         )}
 
         <div className="cart-page__actions">
-          <Link className="cart-page__continue" to="/#catalog">
+          <Link className="cart-page__continue" to="/catalog">
             Продовжити покупки
           </Link>
           {canCheckout ? (

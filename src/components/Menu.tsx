@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { NavLink as RouterNavLink } from 'react-router';
 import type { NavLink } from '../types';
 import CartWidget from './CartWidget';
 import Logo from './Logo';
@@ -13,9 +13,15 @@ export default function Menu({ links }: { links: NavLink[] }) {
       <Logo className="menu__logo" />
       <div className="menu__list">
         {links.map((link) => (
-          <Link key={link.href} to={link.href} className="menu__link">
+          // поточний розділ підкреслено; «Головна» — лише на самій головній
+          <RouterNavLink
+            key={link.href}
+            to={link.href}
+            end={link.href === '/'}
+            className={({ isActive }) => `menu__link${isActive ? ' menu__link--active' : ''}`}
+          >
             <span className="menu__text">{link.label}</span>
-          </Link>
+          </RouterNavLink>
         ))}
       </div>
       <div className="menu__actions">

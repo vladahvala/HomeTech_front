@@ -3,7 +3,7 @@
 // Блок: "Про нас" і "Наші переваги" у дві колонки
 .about {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px 40px;
   align-items: start;
   text-align: left;
@@ -25,10 +25,19 @@
     hyphens: auto;
   }
 
+  &__link {
+    color: $color-primary;
+    font-weight: 700;
+  }
+
   &__list {
     padding-left: 20px;
     font-size: 1em;
     line-height: 1.6;
+  }
+
+  @include respond-down($bp-tablet) {
+    grid-template-columns: 1fr 1fr;
   }
 
   @include respond-down($bp-phone) {

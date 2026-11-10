@@ -72,7 +72,7 @@ export default function CheckoutPage() {
     // А3
     content = (
       <ListState kind="empty" text="Кошик порожній. Додайте товари, щоб оформити замовлення.">
-        <Link className="cart-button list-state__retry" to="/#catalog">
+        <Link className="cart-button list-state__retry" to="/catalog">
           До каталогу
         </Link>
       </ListState>

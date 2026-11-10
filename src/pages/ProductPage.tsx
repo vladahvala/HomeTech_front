@@ -55,6 +55,7 @@ function ProductDetailsView({ product }: { product: ProductDetails }) {
 
   const crumbs = [
     { label: 'Головна', to: '/' },
+    { label: 'Каталог', to: '/catalog' },
     ...getCategoryPath(categories ?? [], product.categoryId).map((item) => ({
       label: item.name,
       to: `/catalog/${item.slug}`,

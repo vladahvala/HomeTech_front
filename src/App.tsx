@@ -22,8 +22,11 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import AdminProductPage from './pages/admin/AdminProductPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import CartPage from './pages/CartPage';
+import CatalogPage from './pages/CatalogPage';
 import CategoryPage from './pages/CategoryPage';
 import CheckoutPage from './pages/CheckoutPage';
+import ContactsPage from './pages/ContactsPage';
+import DeliveryPage from './pages/DeliveryPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -45,9 +48,12 @@ export default function App() {
           <Routes>
             {/* Гість і всі інші */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/catalog" element={<CatalogPage />} />
             <Route path="/catalog/:slug" element={<CategoryPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/promotions" element={<PromotionsPage />} />
+            <Route path="/delivery" element={<DeliveryPage />} />
+            <Route path="/contacts" element={<ContactsPage />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
             {/* оформлення саме показує «Увійдіть» гостю й повідомлення адміну (А1, А2) */}

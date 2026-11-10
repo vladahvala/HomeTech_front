@@ -1,0 +1,121 @@
+@use '../abstracts' as *;
+
+// Блок: головна — акції, категорії, новинки, про магазин
+.home {
+  &__section {
+    width: 100%;
+    max-width: $container-max;
+    margin: 28px auto 0;
+    padding: 0 40px;
+    box-sizing: border-box;
+  }
+
+  &__header {
+    @include flex(row, space-between, baseline);
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-bottom: 14px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  &__more {
+    color: $color-primary;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  // новинки: 4 в ряд, без бокових відступів сітки каталогу
+  &__products.catalog__products {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 0;
+  }
+
+  &__cta {
+    margin: 24px 0 0;
+    text-align: center;
+  }
+
+  &__cta-button {
+    display: inline-block;
+    padding: 12px 32px;
+    text-decoration: none;
+  }
+
+  @include respond-down($bp-tablet) {
+    &__section {
+      padding: 0 30px;
+    }
+
+    &__products.catalog__products {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @include respond-down($bp-phone) {
+    &__section {
+      padding: 0 20px;
+    }
+
+    &__title {
+      font-size: 22px;
+    }
+
+    &__products.catalog__products {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Блок: плитки категорій на головній
+.category-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__item {
+    padding: 18px 20px;
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    background-color: $color-surface;
+    transition: box-shadow $transition-base;
+
+    &:hover,
+    &:focus-within {
+      box-shadow: 0 4px 16px rgba(15, 118, 110, 0.18);
+    }
+  }
+
+  &__name {
+    font-size: 19px;
+    font-weight: 700;
+    color: $color-text-muted;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-primary;
+      text-decoration: underline;
+    }
+  }
+
+  &__children {
+    @include flex(row, flex-start, center);
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__child {
+    color: $color-primary;
+    font-size: 15px;
+  }
+}

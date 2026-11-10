@@ -16,16 +16,15 @@ export const SELLER = {
   email: 'info@domtech.example',
 };
 
-// Посилання ведуть на розділи головної, тому працюють і зі сторінки товару
 export const mainMenu: NavLink[] = [
   { href: '/', label: 'Головна' },
-  { href: '/#catalog', label: 'Каталог' },
-  { href: '/#delivery', label: 'Доставка та оплата' },
-  { href: '/#advantages', label: 'Наші переваги' },
-  { href: '/#contacts', label: 'Контакти' },
+  { href: '/catalog', label: 'Каталог' },
+  { href: '/promotions', label: 'Акції' },
+  { href: '/delivery', label: 'Доставка та оплата' },
+  { href: '/contacts', label: 'Контакти' },
 ];
 
-export const footerLinks: NavLink[] = [{ href: '/promotions', label: 'Акції' }, ...mainMenu.slice(1)];
+export const footerLinks: NavLink[] = mainMenu.slice(1);
 
 export const socialLinks: SocialLink[] = [
   { label: 'Facebook', href: '#', icon: 'ri-facebook-fill' },

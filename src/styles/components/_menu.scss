@@ -74,7 +74,8 @@
       font-size: 22px;
     }
 
-    &:hover .menu__text::after {
+    &:hover .menu__text::after,
+    &--active .menu__text::after {
       opacity: 1;
     }
 
@@ -100,7 +101,7 @@
       left: 0;
       width: 100%;
       height: 3px;
-      background: $gradient-accent;
+      background: $color-white; // на темній шапці бірюзове підкреслення не видно
       opacity: 0;
       transition: opacity 300ms ease-in-out;
     }

@@ -27,6 +27,7 @@ export default function CategoryPage() {
 
   const crumbs = [
     { label: 'Головна', to: '/' },
+    { label: 'Каталог', to: '/catalog' },
     ...getCategoryPath(categories, category.id).map((item) => ({
       label: item.name,
       to: item.id === category.id ? undefined : `/catalog/${item.slug}`,

@@ -38,7 +38,7 @@ export default function OrderSuccessPage() {
           <Link className="notice__link" to="/account/orders">
             Мої замовлення
           </Link>
-          <Link className="notice__link" to="/#catalog">
+          <Link className="notice__link" to="/catalog">
             Продовжити покупки
           </Link>
         </div>
