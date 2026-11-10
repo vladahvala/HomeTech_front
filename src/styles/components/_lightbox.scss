@@ -1,0 +1,46 @@
+@use '../abstracts' as *;
+
+// Блок: повноекранний перегляд фото
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  @include flex(row, center, center);
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.75);
+
+  &__content {
+    @include flex(column);
+    gap: 16px;
+    width: min(600px, 100%);
+  }
+
+  &__close {
+    align-self: flex-end;
+    padding: 0;
+    border: none;
+    background: none;
+    color: $color-white;
+    font-size: 40px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      color: $color-primary-hover;
+    }
+  }
+
+  &__main {
+    position: relative;
+  }
+
+  &__image {
+    display: block;
+    width: 100%;
+    max-height: 65vh;
+    border-radius: 12px;
+    background-color: $color-surface;
+    object-fit: contain;
+  }
+}

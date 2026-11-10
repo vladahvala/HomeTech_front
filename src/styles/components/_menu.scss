@@ -4,6 +4,7 @@
 // Блок: головне меню
 .menu {
   @include flex(row, space-between, center);
+  position: relative; // від меню позиціонується кошик на телефонах
   width: 100%;
   box-sizing: border-box;
   background-color: $color-primary;
@@ -21,6 +22,12 @@
 
     .logo__slogan {
       color: $color-white;
+
+      // поруч є ще й кошик, тож на середніх екранах слоган переносимо на 2 рядки,
+      // щоб пункти меню не ламались
+      @include respond-down($bp-desktop) {
+        max-width: 200px;
+      }
     }
   }
 

@@ -1,4 +1,6 @@
+import { Link } from 'react-router';
 import type { NavLink } from '../types';
+import CartWidget from './CartWidget';
 import Logo from './Logo';
 
 export default function Menu({ links }: { links: NavLink[] }) {
@@ -7,11 +9,12 @@ export default function Menu({ links }: { links: NavLink[] }) {
       <Logo className="menu__logo" />
       <div className="menu__list">
         {links.map((link) => (
-          <a key={link.href} href={link.href} className="menu__link">
+          <Link key={link.href} to={link.href} className="menu__link">
             <span className="menu__text">{link.label}</span>
-          </a>
+          </Link>
         ))}
       </div>
+      <CartWidget />
     </nav>
   );
 }

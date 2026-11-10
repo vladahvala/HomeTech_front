@@ -2,13 +2,14 @@ import type { NavLink, SocialLink } from '../types';
 
 export const SITE_NAME = 'ДомТех';
 export const SITE_SLOGAN = 'Технології для комфортного життя';
+export const SITE_TITLE = 'ДомТех — магазин техніки';
 
 export const mainMenu: NavLink[] = [
-  { href: '#', label: 'Головна' },
-  { href: '#catalog', label: 'Каталог' },
-  { href: '#delivery', label: 'Доставка та оплата' },
-  { href: '#advantages', label: 'Наші переваги' },
-  { href: '#contacts', label: 'Контакти' },
+  { href: '/', label: 'Головна' },
+  { href: '/#catalog', label: 'Каталог' },
+  { href: '/#delivery', label: 'Доставка та оплата' },
+  { href: '/#advantages', label: 'Наші переваги' },
+  { href: '/#contacts', label: 'Контакти' },
 ];
 
 export const footerLinks: NavLink[] = mainMenu.slice(1);

@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { SITE_NAME } from '../data/site';
 import type { NavLink, SocialLink } from '../types';
 
@@ -16,7 +17,7 @@ export default function Footer({ links, socialLinks }: { links: NavLink[]; socia
           <ul className="footer__list">
             {links.map((link) => (
               <li key={link.href} className="footer__item">
-                <a className="footer__link" href={link.href}>{link.label}</a>
+                <Link className="footer__link" to={link.href}>{link.label}</Link>
               </li>
             ))}
           </ul>

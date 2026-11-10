@@ -1,0 +1,38 @@
+@use '../abstracts' as *;
+
+// Блок: вибір кількості «− 1 +»
+.quantity {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  background-color: $color-surface;
+
+  &__button {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: $color-primary;
+    font-size: 20px;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background-color: $color-bg;
+    }
+
+    &:disabled {
+      color: $color-border;
+      cursor: not-allowed;
+    }
+  }
+
+  &__value {
+    min-width: 40px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+  }
+}

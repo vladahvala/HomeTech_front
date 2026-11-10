@@ -7,8 +7,19 @@ export interface Product {
   id: number;
   title: string;
   price: number;
+  /** Стара ціна — якщо задана, показується знижка */
+  oldPrice?: number;
   image: string;
   imageAlt: string;
+  /** Фото для сторінки товару. Якщо немає — використовується image */
+  gallery?: string[];
+  description: string;
+}
+
+/** Рядок кошика: товар і кількість */
+export interface CartItem {
+  product: Product;
+  quantity: number;
 }
 
 export interface Slide {

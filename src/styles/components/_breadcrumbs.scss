@@ -1,0 +1,24 @@
+@use '../abstracts' as *;
+
+// Блок: «Головна / Каталог / Товар»
+.breadcrumbs {
+  font-size: 14px;
+  color: $color-gray;
+
+  &__link {
+    color: $color-primary;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__separator {
+    margin: 0 6px;
+  }
+
+  &__current {
+    color: $color-text-muted;
+  }
+}
