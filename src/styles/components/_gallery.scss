@@ -25,6 +25,15 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: contain;
+
+    // заглушка «Фото відсутнє», коли фото немає (не кнопка, тож рамка окремо)
+    &--placeholder {
+      padding: 20%;
+      box-sizing: border-box;
+      border: 1px solid $color-border;
+      border-radius: 12px;
+      background-color: #f3f4f6;
+    }
   }
 }
 

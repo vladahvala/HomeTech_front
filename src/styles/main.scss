@@ -10,6 +10,7 @@
 @use 'layout/product-page';
 @use 'layout/auth-page';
 @use 'layout/account-page';
+@use 'layout/category-page';
 
 // Components
 @use 'components/logo';
@@ -33,3 +34,9 @@
 @use 'components/breadcrumbs';
 @use 'components/form-field';
 @use 'components/user-menu';
+@use 'components/search-bar';
+@use 'components/availability';
+@use 'components/list-state';
+@use 'components/catalog-toolbar';
+@use 'components/filters';
+@use 'components/specs';

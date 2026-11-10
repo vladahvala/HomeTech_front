@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { useCart } from '../context/CartContext';
 import { useClickOutside } from '../hooks/useClickOutside';
 import { formatPrice } from '../utils/format';
+import ProductImage from './ProductImage';
 
 /** Іконка кошика в меню з лічильником і випадаючим списком товарів */
 export default function CartWidget() {
@@ -48,11 +49,11 @@ export default function CartWidget() {
               <ul className="cart__list">
                 {items.map(({ product, quantity }) => (
                   <li key={product.id} className="cart__item">
-                    <img className="cart__image" src={product.image} alt="" />
+                    <ProductImage className="cart__image" src={product.imageUrl} alt="" />
 
                     <div className="cart__details">
                       <Link to={`/product/${product.id}`} className="cart__name" onClick={close}>
-                        {product.title}
+                        {product.name}
                       </Link>
                       <p className="cart__price">
                         {formatPrice(product.price)} × {quantity} ={' '}
@@ -63,7 +64,7 @@ export default function CartWidget() {
                     <button
                       type="button"
                       className="cart__remove"
-                      aria-label={`Видалити з кошика: ${product.title}`}
+                      aria-label={`Видалити з кошика: ${product.name}`}
                       onClick={() => removeFromCart(product.id)}
                     >
                       <i className="ri-delete-bin-line" />

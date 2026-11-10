@@ -36,19 +36,7 @@
     color: $color-primary;
   }
 
-  &__discount {
-    padding: 2px 8px;
-    border-radius: 6px;
-    background-color: $color-danger;
-    color: $color-white;
-    font-weight: 700;
-  }
 
-  &__old-price {
-    font-size: 18px;
-    color: $color-gray;
-    text-decoration: line-through;
-  }
 
   &__description {
     margin-bottom: 24px;
@@ -79,6 +67,26 @@
     margin: 10px 0 0;
     font-weight: 700;
     color: $color-success;
+
+    &--error {
+      color: $color-danger;
+    }
+  }
+
+  &__unavailable {
+    margin: 0;
+    font-size: 16px;
+    color: $color-danger;
+  }
+
+  &__section {
+    margin-top: 32px;
+  }
+
+  &__subtitle {
+    margin: 0 0 12px;
+    font-size: 22px;
+    font-weight: 700;
   }
 
   @include respond-down($bp-tablet) {

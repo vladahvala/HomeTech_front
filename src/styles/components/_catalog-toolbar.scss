@@ -1,0 +1,38 @@
+@use '../abstracts' as *;
+
+// Блок: панель над товарами — кількість і порядок
+.catalog-toolbar {
+  @include flex(row, space-between, center);
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 30px 25px 0;
+
+  &__count {
+    margin: 0;
+    font-size: 15px;
+    color: #4b5563;
+  }
+
+  &__sort {
+    @include flex(row, flex-start, center);
+    gap: 8px;
+    margin: 0;
+    font-size: 15px;
+  }
+
+  &__select {
+    padding: 6px 10px;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    background-color: $color-surface;
+    font: inherit;
+  }
+
+  @include respond-down($bp-tablet) {
+    padding: 24px 30px 0;
+  }
+
+  @include respond-down($bp-phone) {
+    padding: 16px 20px 0;
+  }
+}

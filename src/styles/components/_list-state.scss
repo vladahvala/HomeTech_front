@@ -1,0 +1,25 @@
+@use '../abstracts' as *;
+
+// Блок: стани списків — завантаження, порожньо, помилка (USB-04)
+.list-state {
+  @include flex(column, center, center);
+  gap: 14px;
+  padding: 48px 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #4b5563;
+
+  &__text {
+    max-width: 520px;
+    margin: 0;
+  }
+
+  &--error {
+    color: $color-danger;
+  }
+
+  &__retry {
+    display: inline-block;
+    text-decoration: none;
+  }
+}

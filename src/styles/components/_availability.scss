@@ -1,0 +1,32 @@
+@use '../abstracts' as *;
+
+// Блок: статус наявності товару
+.availability {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+
+  &--in-stock {
+    background-color: rgba(25, 135, 84, 0.12);
+    color: #146c43;
+  }
+
+  &--expected {
+    background-color: rgba(217, 119, 6, 0.14);
+    color: #92400e;
+  }
+
+  &--out {
+    background-color: rgba(107, 114, 128, 0.14);
+    color: #4b5563;
+  }
+
+  // у картці товару — по центру над ціною
+  .product-card & {
+    align-self: center;
+    margin-top: 6px;
+  }
+}

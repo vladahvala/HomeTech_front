@@ -1,0 +1,105 @@
+@use '../abstracts' as *;
+
+// Блок: фільтри категорії (UC-CAT-02)
+.filters {
+  width: 100%;
+  margin-bottom: 20px;
+  border: 1px solid $color-border;
+  border-radius: 10px;
+  background-color: $color-surface;
+
+  &__summary {
+    padding: 12px 14px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  &__body {
+    padding: 0 14px 14px;
+  }
+
+  &__group {
+    margin: 0;
+    padding: 12px 0;
+    border-top: 1px solid $color-border;
+  }
+
+  &__fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  &__group.filters__fieldset {
+    padding: 12px 0;
+  }
+
+  &__title {
+    margin: 0 0 8px;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  &__option {
+    @include flex(row, flex-start, center);
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 15px;
+    cursor: pointer;
+
+    input {
+      width: 16px;
+      height: 16px;
+      accent-color: $color-primary;
+    }
+
+    &--stock {
+      padding-bottom: 12px;
+      font-weight: 700;
+    }
+  }
+
+  &__price {
+    @include flex(row, flex-start, center);
+    gap: 6px;
+  }
+
+  &__input {
+    width: 100%;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid $color-border;
+    border-radius: 6px;
+    font: inherit;
+  }
+
+  &__error {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: $color-danger;
+  }
+
+  &__apply,
+  &__reset {
+    margin-top: 10px;
+    padding: 6px 12px;
+    border: 1px solid $color-primary;
+    border-radius: 6px;
+    background: none;
+    color: $color-primary;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-primary;
+      color: $color-white;
+    }
+  }
+
+  &__reset {
+    width: 100%;
+  }
+}

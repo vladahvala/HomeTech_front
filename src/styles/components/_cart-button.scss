@@ -19,4 +19,11 @@
   &__icon {
     font-size: 18px;
   }
+
+  // «Немає в наявності» — замовити не можна (FUN-07)
+  &:disabled {
+    background: $color-border;
+    color: #4b5563;
+    cursor: not-allowed;
+  }
 }

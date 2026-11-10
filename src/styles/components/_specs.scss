@@ -1,0 +1,28 @@
+@use '../abstracts' as *;
+
+// Блок: таблиця характеристик на картці товару
+.specs {
+  margin: 24px 0 0;
+
+  &__row {
+    display: grid;
+    grid-template-columns: minmax(140px, 40%) 1fr;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__name {
+    font-weight: 400;
+    color: #4b5563;
+  }
+
+  &__value {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  &--wide {
+    max-width: 760px;
+  }
+}

@@ -1,0 +1,82 @@
+@use '../abstracts' as *;
+
+// Блок: сторінка категорії й пошуку
+.category-page {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px 0 20px;
+  box-sizing: border-box;
+
+  > .breadcrumbs,
+  &__title {
+    padding: 0 30px;
+  }
+
+  &__title {
+    margin: 12px 0 0;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  // на сторінці категорії ліва колонка — фільтри, тож вона трохи ширша
+  .catalog__sidebar {
+    flex-basis: 260px;
+    width: 260px;
+    padding-right: 0;
+  }
+
+  @include respond-down($bp-tablet) {
+    .catalog__sidebar {
+      flex-basis: auto; // колонки тут одна під одною, тож ширина не має ставати висотою
+      width: 100%;
+      padding: 20px 30px 0;
+    }
+  }
+
+  @include respond-down($bp-phone) {
+    > .breadcrumbs,
+    &__title {
+      padding: 0 20px;
+    }
+
+    &__title {
+      font-size: 22px;
+    }
+
+    .catalog__sidebar {
+      padding: 16px 20px 0;
+    }
+  }
+}
+
+// Підкатегорії (у категорії верхнього рівня)
+.subcategories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 24px 30px;
+  list-style: none;
+
+  &__link {
+    display: block;
+    padding: 28px 20px;
+    border: 1px solid $color-border;
+    border-radius: 10px;
+    background-color: $color-surface;
+    color: $color-text-muted;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition:
+      box-shadow $transition-base,
+      color $transition-base;
+
+    &:hover {
+      color: $color-primary;
+      box-shadow: 0 0 10px $color-primary;
+    }
+  }
+}

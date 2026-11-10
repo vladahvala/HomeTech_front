@@ -1,38 +1,61 @@
-import type { MouseEvent } from 'react';
+import { Link } from 'react-router';
 
 interface PagerProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
-  minLinks?: number; // як у макеті: завжди 3 кнопки, зайві неактивні
+  /** Адреса сторінки N — посилання, щоб працювали «Назад» і відкриття в новій вкладці */
+  hrefFor: (page: number) => string;
 }
 
-export default function Pager({ currentPage, totalPages, onPageChange, minLinks = 3 }: PagerProps) {
-  const pages = Array.from({ length: Math.max(totalPages, minLinks) }, (_, i) => i + 1);
+type PagerItem = number | 'gap';
 
-  const handleClick = (event: MouseEvent<HTMLAnchorElement>, page: number) => {
-    event.preventDefault();
-    if (page <= totalPages) onPageChange(page);
-  };
+/** 1 … 4 5 [6] 7 8 … 40 — перша, остання й сусіди поточної */
+function buildItems(current: number, total: number): PagerItem[] {
+  const pages = new Set([1, total, current - 2, current - 1, current, current + 1, current + 2]);
+  const sorted = [...pages].filter((page) => page >= 1 && page <= total).sort((a, b) => a - b);
+
+  const items: PagerItem[] = [];
+  sorted.forEach((page, index) => {
+    if (index > 0 && page - sorted[index - 1] > 1) items.push('gap');
+    items.push(page);
+  });
+  return items;
+}
+
+export default function Pager({ currentPage, totalPages, hrefFor }: PagerProps) {
+  if (totalPages <= 1) return null;
 
   return (
     <nav className="pager" aria-label="Сторінки каталогу">
-      {pages.map((page) => {
-        const isActive = page === currentPage;
-        const isDisabled = page > totalPages;
-        const classes = ['pager__link'];
-        if (isActive) classes.push('pager__link--active');
-        if (isDisabled) classes.push('pager__link--disabled');
-        return (
-          <a key={page} href="#" className={classes.join(' ')}
-            aria-current={isActive ? 'page' : undefined}
-            aria-disabled={isDisabled || undefined}
-            tabIndex={isDisabled ? -1 : undefined}
-            onClick={(event) => handleClick(event, page)}>
-            {page}
-          </a>
-        );
-      })}
+      {currentPage > 1 && (
+        <Link className="pager__link" to={hrefFor(currentPage - 1)} aria-label="Попередня сторінка">
+          ‹
+        </Link>
+      )}
+
+      {buildItems(currentPage, totalPages).map((item, index) =>
+        item === 'gap' ? (
+          <span key={`gap-${index}`} className="pager__gap" aria-hidden="true">
+            …
+          </span>
+        ) : (
+          <Link
+            key={item}
+            className={`pager__link${item === currentPage ? ' pager__link--active' : ''}`}
+            to={hrefFor(item)}
+            aria-current={item === currentPage ? 'page' : undefined}
+            aria-label={`Сторінка ${item}`}
+          >
+            {item}
+          </Link>
+        ),
+      )}
+
+      {currentPage < totalPages && (
+        <Link className="pager__link" to={hrefFor(currentPage + 1)} aria-label="Наступна сторінка">
+          ›
+        </Link>
+      )}
     </nav>
   );
 }

@@ -1,0 +1,59 @@
+@use '../abstracts' as *;
+
+// Блок: рядок пошуку під меню (UC-CAT-03)
+.search-bar {
+  width: 100%;
+  padding: 12px 24px;
+  box-sizing: border-box;
+  background-color: $color-surface;
+  border-bottom: 1px solid $color-border;
+
+  &__inner {
+    @include flex(row, flex-start, stretch);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 14px;
+    border: 1px solid $color-border;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    font: inherit;
+    font-size: 16px;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
+    }
+  }
+
+  &__button {
+    flex-shrink: 0;
+    width: 52px;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    background-color: $color-primary;
+    color: $color-white;
+    font-size: 22px;
+    cursor: pointer;
+
+    &:hover {
+      background: $gradient-accent;
+    }
+  }
+
+  &__error {
+    max-width: 720px;
+    margin: 6px auto 0;
+    font-size: 14px;
+    color: $color-danger;
+  }
+
+  @include respond-down($bp-phone) {
+    padding: 10px 16px;
+  }
+}

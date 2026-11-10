@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { mod } from '../utils/format';
 import Lightbox from './Lightbox';
+import ProductImage from './ProductImage';
 import Thumbnails from './Thumbnails';
 
 interface ProductGalleryProps {
@@ -8,7 +9,10 @@ interface ProductGalleryProps {
   alt: string;
 }
 
-/** Головне фото товару, стрілки, мініатюри; клік по фото відкриває повноекранний перегляд */
+/**
+ * Головне фото товару, стрілки, мініатюри; клік по фото відкриває повноекранний перегляд.
+ * Без фото показує заглушку (FUN-10).
+ */
 export default function ProductGallery({ images, alt }: ProductGalleryProps) {
   const [index, setIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -17,6 +21,16 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
   const hasMany = count > 1;
 
   const closeLightbox = useCallback(() => setIsLightboxOpen(false), []);
+
+  if (count === 0) {
+    return (
+      <section className="gallery" aria-label="Фото товару">
+        <div className="gallery__main">
+          <ProductImage className="gallery__image gallery__image--placeholder" src={null} alt={alt} />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="gallery" aria-label="Фото товару">
@@ -27,7 +41,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
           aria-label="Відкрити фото на весь екран"
           onClick={() => setIsLightboxOpen(true)}
         >
-          <img className="gallery__image" src={images[index]} alt={alt} />
+          <ProductImage className="gallery__image" src={images[index]} alt={alt} />
         </button>
 
         {hasMany && (

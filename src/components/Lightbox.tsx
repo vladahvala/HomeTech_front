@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { mod } from '../utils/format';
+import ProductImage from './ProductImage';
 import Thumbnails from './Thumbnails';
 
 interface LightboxProps {
@@ -66,7 +67,7 @@ export default function Lightbox({ images, index, alt, onIndexChange, onClose }:
         </button>
 
         <div className="lightbox__main">
-          <img className="lightbox__image" src={images[index]} alt={alt} />
+          <ProductImage className="lightbox__image" src={images[index]} alt={alt} />
 
           {hasMany && (
             <>

@@ -2,11 +2,18 @@
 
 // Блок: випадаюче меню категорій (ліва колонка каталогу)
 .category-menu {
+  width: 100%;
+
+  // і посилання (категорія без підкатегорій), і кнопка (з підкатегоріями) виглядають однаково
   &__toggle {
     display: block;
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
+    border: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
     text-decoration: none;
     color: $color-text;
     background-color: $color-primary;

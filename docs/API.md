@@ -51,6 +51,58 @@
 - Сесія діє 7 діб (UC-ACC-02).
 - Правила перевірки полів — таблиця 3.5 SRS; на фронті вони в `src/validation/rules.ts`.
 
-## Далі (етапи 2–3)
+## Каталог (UC-CAT-01…04)
 
-Каталог, кошик, замовлення, кабінет і адмінка — опишемо тут у тому ж форматі, коли до них дійдемо.
+Віддає лише **видимі** категорії й товари: опубліковані, невидалені, з ціною, у видимій категорії.
+
+| Запит | Відповідь |
+|---|---|
+| `GET /api/catalog/categories` | `Category[]` — усі видимі категорії обох рівнів |
+| `GET /api/catalog/categories/:slug/filters` | `CategoryFilters` — варіанти фільтрів категорії |
+| `GET /api/catalog/products?…` | `Page<ProductSummary>` |
+| `GET /api/catalog/products/:id` | `ProductDetails`; `404 NOT_FOUND`, якщо товару немає або він прихований |
+
+### Параметри `GET /api/catalog/products`
+
+Ті самі, що в адресі сторінки (`src/utils/catalogQuery.ts`), тож збережене посилання відкриває той самий список.
+
+| Параметр | Приклад | Зміст |
+|---|---|---|
+| `category` | `kettles` | slug категорії; для батьківської — товари її підкатегорій |
+| `q` | `tefal 1,7` | пошук 2–100 символів: кожне слово є в назві **або** артикулі, без урахування регістру |
+| `page` | `2` | номер сторінки, за замовчуванням 1; на сторінці 20 товарів |
+| `sort` | `price_asc` | `default` (наявність: «В наявності» → «Очікується» → «Немає», далі за назвою), `price_asc`, `price_desc`, `newest` |
+| `m` (кілька) | `m=3&m=7` | id виробників |
+| `pmin`, `pmax` | `1000` | діапазон ціни, грн |
+| `stock` | `1` | лише «В наявності» |
+| `c{id}` (кілька) | `c302=Скло&c302=Пластик` | значення характеристики з id 302 |
+
+Різні фільтри поєднуються умовою «і», варіанти одного фільтра — «або» (UC-CAT-02).
+
+### Типи
+
+```ts
+Category        { id, name, slug, parentId: number | null, order }
+ProductSummary  { id, name, price, availability: 'in_stock' | 'expected' | 'out_of_stock', imageUrl: string | null }
+Page<T>         { items: T[], total, page, pageSize }
+CategoryFilters {
+  manufacturers: { id, name, country }[],      // лише ті, що є в категорії
+  priceMin, priceMax,
+  characteristics: {                            // лише характеристики з ознакою «фільтр»
+    id, name, type: 'number' | 'enum' | 'boolean' | 'text', unit,
+    values: string[]                            // наявні значення; числа — '1.7', так/ні — 'true'/'false'
+  }[]
+}
+ProductDetails = ProductSummary & {
+  article, warrantyMonths, manufacturer: { id, name, country } | null,
+  assemblyCountry, assemblyCity, description, categoryId,
+  characteristics: { name, value, unit }[]      // у порядку шаблону категорії, value — уже текстом
+}
+```
+
+- `imageUrl` — власне фото, інакше фото з прайсу Katran, інакше `null` (фронт покаже заглушку, FUN-10).
+- Повний перелік типів — `src/types/index.ts`.
+
+## Далі
+
+Оформлення замовлення, кабінет клієнта й адмінка — опишемо тут у тому ж форматі, коли до них дійдемо.

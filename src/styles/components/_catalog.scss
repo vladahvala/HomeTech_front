@@ -15,14 +15,25 @@
     box-sizing: border-box;
   }
 
-  &__products {
+  // Права частина: панель (кількість, порядок), сітка товарів, сторінки
+  &__main {
     flex: 1;
     min-width: 0;
+  }
+
+  &__products {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 25px 15px;
-    padding: 30px 25px 40px;
+    padding: 16px 25px 40px;
     box-sizing: border-box;
+    transition: opacity $transition-base;
+
+    // поки вантажиться нова сторінка чи фільтр — попередній список притлумлений
+    &--loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
 
   // Планшети: 2 колонки
@@ -41,7 +52,7 @@
     &__products {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 25px;
-      padding: 30px;
+      padding: 16px 30px 30px;
       justify-items: stretch;
     }
   }
@@ -50,7 +61,7 @@
   @include respond-down($bp-phone) {
     &__products {
       grid-template-columns: 1fr;
-      padding: 20px;
+      padding: 12px 20px 20px;
     }
   }
 }
