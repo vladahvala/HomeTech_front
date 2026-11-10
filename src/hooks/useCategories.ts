@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { catalogService } from '../api';
 import type { Category } from '../types';
 import { useAsync } from './useAsync';
@@ -16,8 +17,27 @@ function loadCategories(): Promise<Category[]> {
   return cache;
 }
 
+// Після змін в адмінці меню й сторінки каталогу мають перечитати категорії
+let version = 0;
+const listeners = new Set<() => void>();
+
+/** Скинути кеш — викликає адмінка після зміни категорій (UC-ADM-CTG-01) */
+export function invalidateCategories(): void {
+  cache = null;
+  version += 1;
+  listeners.forEach((listener) => listener());
+}
+
 export function useCategories() {
-  return useAsync(loadCategories, []);
+  const [current, setCurrent] = useState(version);
+  useEffect(() => {
+    const listener = () => setCurrent(version);
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
+  }, []);
+  return useAsync(loadCategories, [current]);
 }
 
 /** Батьківська категорія (якщо є) і сама категорія — для хлібних крихт */

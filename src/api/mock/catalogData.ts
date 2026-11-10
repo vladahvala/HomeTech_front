@@ -1,9 +1,10 @@
-// ТИМЧАСОВІ дані каталогу, поки немає бекенду.
+// ТИМЧАСОВІ стартові дані каталогу, поки немає бекенду. Адмінка змінює їхню
+// копію в localStorage (див. catalogStore.ts), тут — лише початковий стан.
 // Категорії — стартові з UC-SYS-02; щоб показати два рівні, «Чайники» й
 // «Мікрохвильові печі» вкладено в «Кухонна техніка». Фото немає — у прайсі
 // Katran вони будуть, а поки показується заглушка (FUN-10).
 
-import type { Availability, Category, CharacteristicType, Manufacturer } from '../../types';
+import type { Availability, Category, CharacteristicType, CharacteristicValue, Manufacturer } from '../../types';
 
 export interface MockCharacteristic {
   id: number;
@@ -14,8 +15,6 @@ export interface MockCharacteristic {
   isFilter: boolean;
   order: number;
 }
-
-export type CharacteristicValue = string | number | boolean;
 
 export interface MockProduct {
   id: number;

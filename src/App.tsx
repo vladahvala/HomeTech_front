@@ -11,8 +11,13 @@ import OrderPage from './pages/account/OrderPage';
 import OrdersPage from './pages/account/OrdersPage';
 import PasswordPage from './pages/account/PasswordPage';
 import ProfilePage from './pages/account/ProfilePage';
+import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
+import AdminCategoryPage from './pages/admin/AdminCategoryPage';
+import AdminManufacturersPage from './pages/admin/AdminManufacturersPage';
 import AdminOrderPage from './pages/admin/AdminOrderPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
+import AdminProductPage from './pages/admin/AdminProductPage';
+import AdminProductsPage from './pages/admin/AdminProductsPage';
 import CartPage from './pages/CartPage';
 import CategoryPage from './pages/CategoryPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -92,12 +97,68 @@ export default function App() {
                 </RequireAuth>
               }
             />
-
             <Route
               path="/admin/orders/:number"
               element={
                 <RequireAuth role="admin">
                   <AdminOrderPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/admin/products"
+              element={
+                <RequireAuth role="admin">
+                  <AdminProductsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/products/new"
+              element={
+                <RequireAuth role="admin">
+                  <AdminProductPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/products/:id"
+              element={
+                <RequireAuth role="admin">
+                  <AdminProductPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/categories"
+              element={
+                <RequireAuth role="admin">
+                  <AdminCategoriesPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/categories/new"
+              element={
+                <RequireAuth role="admin">
+                  <AdminCategoryPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/categories/:id"
+              element={
+                <RequireAuth role="admin">
+                  <AdminCategoryPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/manufacturers"
+              element={
+                <RequireAuth role="admin">
+                  <AdminManufacturersPage />
                 </RequireAuth>
               }
             />

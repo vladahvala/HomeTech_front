@@ -1,0 +1,224 @@
+@use '../abstracts' as *;
+
+// Кнопка-посилання для небезпечних дій (видалити)
+.link-button--danger {
+  color: $color-danger;
+}
+
+.link-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+// Блок: панель над списком — кнопка «Додати» й пояснення
+.admin-toolbar {
+  @include flex(row, flex-start, center);
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin-bottom: 16px;
+
+  &__add {
+    padding: 10px 20px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  &__text {
+    flex: 1 1 320px;
+    margin: 0;
+    font-size: 14px;
+    color: #4b5563;
+  }
+}
+
+// Посилання в тексті панелей адмінки — кольором сайту
+.admin-panel__text a {
+  color: $color-primary;
+  font-weight: 700;
+}
+
+// Блок: опубліковано / приховано
+.publish-state {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--on {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  &--off {
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+}
+
+// Блок: підтвердження дії просто в рядку таблиці («Видалити? Так Ні»)
+.admin-confirm {
+  @include flex(row, flex-start, center);
+  flex-wrap: wrap;
+  gap: 6px 12px;
+
+  &--wrap {
+    max-width: 260px;
+  }
+
+  &__text {
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+// Блок: прапорець із підписом у формах адмінки
+.admin-check {
+  @include flex(row, flex-start, center);
+  gap: 10px;
+  margin: 4px 0 18px;
+  cursor: pointer;
+
+  input {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    accent-color: $color-primary;
+  }
+}
+
+// Список товарів
+.admin-products {
+  &__photo-cell {
+    width: 64px;
+  }
+
+  &__photo {
+    display: block;
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    border-radius: 6px;
+    background-color: $color-bg;
+  }
+
+  &__name {
+    color: $color-primary;
+    font-weight: 700;
+  }
+
+  &__meta {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    color: #4b5563;
+  }
+
+  &__missing {
+    font-size: 14px;
+    font-style: italic;
+    color: $color-danger;
+  }
+
+  &__action {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  &__actions {
+    white-space: nowrap;
+  }
+
+  &__table .availability {
+    white-space: nowrap;
+  }
+
+  // на телефоні фото в картці зайве
+  @include respond-down($bp-phone) {
+    &__photo-cell {
+      display: none !important;
+    }
+
+    &__actions {
+      white-space: normal;
+    }
+  }
+}
+
+// Фільтри товарів: пошук на всю ширину, далі вибір
+.admin-filters {
+  &__fields--products {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    .admin-filters__field--wide {
+      grid-column: 1 / -1;
+    }
+
+    .admin-filters__actions {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__field select {
+    padding: 7px 10px;
+    border: 1px solid $color-border;
+    border-radius: 6px;
+    background-color: $color-surface;
+    font: inherit;
+    color: $color-text-muted;
+  }
+
+  @include respond-down($bp-laptop) {
+    &__fields--products {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @include respond-down($bp-phone) {
+    &__fields--products {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Категорії: підкатегорії з відступом
+.admin-categories {
+  &__child td:first-child {
+    padding-left: 34px;
+  }
+
+  &__slug {
+    font-size: 13px;
+    color: #4b5563;
+  }
+
+  @include respond-down($bp-phone) {
+    &__child td:first-child {
+      padding-left: 12px;
+    }
+  }
+}
+
+// Виробники
+.admin-manufacturers {
+  &__search {
+    @include flex(row, flex-start, flex-end);
+    flex-wrap: wrap;
+    gap: 10px 20px;
+
+    .admin-filters__field {
+      flex: 0 1 340px;
+    }
+  }
+
+  &__editing {
+    background-color: rgba(13, 148, 136, 0.06);
+
+    .form-field__input {
+      padding: 7px 10px;
+      font-size: 15px;
+    }
+  }
+}

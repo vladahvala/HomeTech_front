@@ -3,7 +3,14 @@
 // Ті самі правила має перевіряти бекенд.
 
 import type { FieldErrors } from '../api/ApiError';
-import type { RegisterData } from '../types';
+import type {
+  CategoryInput,
+  Characteristic,
+  CharacteristicInput,
+  ManufacturerInput,
+  ProductInput,
+  RegisterData,
+} from '../types';
 
 export const HINTS = {
   email: 'Наприклад: name@example.com',
@@ -153,4 +160,177 @@ export function validateInternalNote(value: string): string | null {
     return `Службова примітка задовга: максимум ${INTERNAL_NOTE_MAX} символів.`;
   }
   return null;
+}
+
+// ===== Адмінка: каталог (UC-ADM-PRD-02, 03, UC-ADM-CTG-01, 02, UC-ADM-MNF-01) =====
+
+export const PRODUCT_NAME_MIN = 3;
+export const PRODUCT_NAME_MAX = 200;
+export const DESCRIPTION_MAX = 5000;
+export const PRICE_MIN = 0.01;
+export const PRICE_MAX = 9_999_999.99;
+export const WARRANTY_MAX = 120;
+export const SHORT_TEXT_MAX = 60;
+export const TEXT_VALUE_MAX = 200;
+export const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+export const ENUM_OPTIONS_MIN = 2;
+export const ENUM_OPTIONS_MAX = 30;
+export const ORDER_MAX = 9999;
+
+/** «1 299,50» → 1299.5; порожньо → null; не число → NaN (помилку покаже перевірка) */
+export function parseDecimal(value: string): number | null {
+  const text = value.replace(/[\s\u00a0]/g, '').replace(',', '.');
+  if (!text) return null;
+  return /^-?\d+(\.\d+)?$/.test(text) ? Number(text) : Number.NaN;
+}
+
+/** Ціна: від 0,01 до 9 999 999,99 грн, не більше двох знаків після коми */
+export function validatePrice(value: number | null): string | null {
+  if (value === null) return null;
+  if (!Number.isFinite(value)) return 'Ціна — це число, наприклад 1299 або 1299,50.';
+  if (value < PRICE_MIN || value > PRICE_MAX) return 'Ціна має бути від 0,01 до 9 999 999,99 грн.';
+  if (Math.round(value * 100) !== value * 100) return 'У ціні не більше двох знаків після коми (копійки).';
+  return null;
+}
+
+/** Гарантія: ціле число місяців від 0 до 120 */
+export function validateWarranty(value: number | null): string | null {
+  if (value === null) return null;
+  if (!Number.isInteger(value) || value < 0 || value > WARRANTY_MAX) {
+    return `Гарантія — ціле число місяців від 0 до ${WARRANTY_MAX}.`;
+  }
+  return null;
+}
+
+function lengthError(value: string, label: string, max: number): string | null {
+  return value.trim().length > max ? `${label}: максимум ${max} символів.` : null;
+}
+
+/** Значення характеристики за її типом; ключ помилки — value-<id> */
+export function validateCharacteristicValue(
+  characteristic: Pick<Characteristic, 'type' | 'options'>,
+  value: unknown,
+): string | null {
+  switch (characteristic.type) {
+    case 'number':
+      return typeof value === 'number' && Number.isFinite(value) ? null : 'Вкажіть число, наприклад 1,7.';
+    case 'boolean':
+      return typeof value === 'boolean' ? null : 'Оберіть «Так» або «Ні».';
+    case 'enum':
+      return typeof value === 'string' && characteristic.options.includes(value)
+        ? null
+        : 'Оберіть варіант зі списку.';
+    default:
+      if (typeof value !== 'string' || !value.trim()) return 'Вкажіть значення.';
+      return lengthError(value, 'Значення задовге', TEXT_VALUE_MAX);
+  }
+}
+
+/**
+ * Форма товару. characteristics — шаблон обраної категорії: значення інших
+ * характеристик сервер відкидає (зміна категорії, UC-ADM-PRD-03).
+ */
+export function validateProductInput(
+  input: ProductInput,
+  characteristics: Pick<Characteristic, 'id' | 'type' | 'options'>[],
+): FieldErrors {
+  const errors: FieldErrors = {};
+  const name = input.name.trim();
+  if (!name) errors.name = 'Вкажіть назву товару.';
+  else if (name.length < PRODUCT_NAME_MIN || name.length > PRODUCT_NAME_MAX) {
+    errors.name = `Назва має містити від ${PRODUCT_NAME_MIN} до ${PRODUCT_NAME_MAX} символів.`;
+  }
+  if (!['in_stock', 'expected', 'out_of_stock'].includes(input.availability)) {
+    errors.availability = 'Оберіть статус наявності.';
+  }
+  const checks: [string, string | null][] = [
+    ['price', validatePrice(input.price)],
+    ['warrantyMonths', validateWarranty(input.warrantyMonths)],
+    ['description', lengthError(input.description, 'Опис задовгий', DESCRIPTION_MAX)],
+    ['manufacturerName', lengthError(input.manufacturerName, 'Назва виробника задовга', 100)],
+    ['article', lengthError(input.article, 'Артикул задовгий', SHORT_TEXT_MAX)],
+    ['assemblyCountry', lengthError(input.assemblyCountry, 'Країна задовга', SHORT_TEXT_MAX)],
+    ['assemblyCity', lengthError(input.assemblyCity, 'Місто задовге', SHORT_TEXT_MAX)],
+  ];
+  for (const [field, message] of checks) if (message) errors[field] = message;
+
+  for (const characteristic of characteristics) {
+    const value = input.values[characteristic.id];
+    if (value === undefined) continue; // характеристики необов'язкові
+    const message = validateCharacteristicValue(characteristic, value);
+    if (message) errors[`value-${characteristic.id}`] = message;
+  }
+  return errors;
+}
+
+/** Фото товару: JPEG, PNG або WebP до 5 МБ */
+export function validatePhoto(file: { type: string; size: number }): string | null {
+  if (!PHOTO_TYPES.includes(file.type)) return 'Фото має бути у форматі JPEG, PNG або WebP.';
+  if (file.size > PHOTO_MAX_BYTES) return 'Фото завелике: максимум 5 МБ. Зменште його й спробуйте ще раз.';
+  return null;
+}
+
+const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+function validateOrder(value: number): string | null {
+  return Number.isInteger(value) && value >= 0 && value <= ORDER_MAX
+    ? null
+    : `Порядок — ціле число від 0 до ${ORDER_MAX}.`;
+}
+
+/** Категорія: назва 2–60 символів, ідентифікатор в адресі — латиниця, цифри, дефіс */
+export function validateCategoryInput(input: CategoryInput): FieldErrors {
+  const errors: FieldErrors = {};
+  const name = input.name.trim();
+  if (!name) errors.name = 'Вкажіть назву категорії.';
+  else if (name.length < 2 || name.length > SHORT_TEXT_MAX) {
+    errors.name = `Назва категорії має містити від 2 до ${SHORT_TEXT_MAX} символів.`;
+  }
+  const slug = input.slug.trim();
+  if (!slug) errors.slug = 'Вкажіть ідентифікатор для адреси сторінки.';
+  else if (slug.length < 2 || slug.length > SHORT_TEXT_MAX || !SLUG_PATTERN.test(slug)) {
+    errors.slug = 'Лише малі латинські літери, цифри й дефіс між ними, 2–60 символів. Наприклад: kettles.';
+  }
+  const order = validateOrder(input.order);
+  if (order) errors.order = order;
+  const template = lengthError(input.importTemplate ?? '', 'Шаблон задовгий', TEXT_VALUE_MAX);
+  if (template) errors.importTemplate = template;
+  return errors;
+}
+
+/** Характеристика шаблону: назва, тип, для переліку — 2–30 різних варіантів */
+export function validateCharacteristicInput(input: CharacteristicInput): FieldErrors {
+  const errors: FieldErrors = {};
+  const name = input.name.trim();
+  if (!name) errors.name = 'Вкажіть назву характеристики.';
+  else if (name.length > SHORT_TEXT_MAX) errors.name = `Назва: максимум ${SHORT_TEXT_MAX} символів.`;
+  if (!['number', 'enum', 'boolean', 'text'].includes(input.type)) errors.type = 'Оберіть тип.';
+  if (input.type === 'enum') {
+    const options = input.options.map((option) => option.trim()).filter(Boolean);
+    const unique = new Set(options.map((option) => option.toLocaleLowerCase('uk')));
+    if (options.length < ENUM_OPTIONS_MIN || options.length > ENUM_OPTIONS_MAX) {
+      errors.options = `Перелік має містити від ${ENUM_OPTIONS_MIN} до ${ENUM_OPTIONS_MAX} варіантів — кожен з нового рядка.`;
+    } else if (unique.size !== options.length) {
+      errors.options = 'Варіанти повторюються. Залиште кожен один раз.';
+    } else if (options.some((option) => option.length > SHORT_TEXT_MAX)) {
+      errors.options = `Кожен варіант — до ${SHORT_TEXT_MAX} символів.`;
+    }
+  }
+  const unit = lengthError(input.unit ?? '', 'Одиниця виміру задовга', 20);
+  if (unit) errors.unit = unit;
+  const order = validateOrder(input.order);
+  if (order) errors.order = order;
+  return errors;
+}
+
+/** Виробник: назва 1–100 символів (унікальність перевіряє сервер) */
+export function validateManufacturerInput(input: ManufacturerInput): FieldErrors {
+  const errors: FieldErrors = {};
+  const name = input.name.trim();
+  if (!name) errors.name = 'Вкажіть назву виробника.';
+  else if (name.length > 100) errors.name = 'Назва виробника: максимум 100 символів.';
+  const country = lengthError(input.country ?? '', 'Країна задовга', SHORT_TEXT_MAX);
+  if (country) errors.country = country;
+  return errors;
 }

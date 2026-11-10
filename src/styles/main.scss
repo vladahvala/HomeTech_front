@@ -15,6 +15,7 @@
 @use 'layout/checkout-page';
 @use 'layout/order-view';
 @use 'layout/admin-order';
+@use 'layout/admin-edit';
 
 // Components
 @use 'components/logo';
@@ -54,3 +55,4 @@
 @use 'components/orders-table';
 @use 'components/admin-filters';
 @use 'components/payment-status';
+@use 'components/admin-catalog';

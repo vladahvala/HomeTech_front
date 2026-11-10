@@ -19,6 +19,9 @@ export default function AccountLayout({ title, crumbs = [], children }: AccountL
   const links = isAdmin
     ? [
         { to: '/admin/orders', label: 'Замовлення' },
+        { to: '/admin/products', label: 'Товари' },
+        { to: '/admin/categories', label: 'Категорії' },
+        { to: '/admin/manufacturers', label: 'Виробники' },
         { to: '/account/password', label: 'Зміна пароля' },
       ]
     : [

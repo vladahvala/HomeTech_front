@@ -22,10 +22,9 @@ import {
 import { ApiError } from '../ApiError';
 import type { FieldErrors } from '../ApiError';
 import { getMockSessionUser } from '../auth/MockAuthService';
-import { PRODUCTS } from '../mock/catalogData';
+import { isProductVisible, loadCatalog, toProductSummary } from '../mock/catalogStore';
 import { loadOrders, nextOrderId, orderNumber, saveOrders, toClientOrder } from '../mock/orderStore';
 import type { StoredOrder } from '../mock/orderStore';
-import type { MockProduct } from '../mock/catalogData';
 import type { OrderService } from './OrderService';
 
 // ТИМЧАСОВО, поки немає бекенду. Замовлення зберігаються в localStorage.
@@ -35,14 +34,11 @@ const INTERVALS = ['09-12', '12-15', '15-18', '18-21'];
 
 const delay = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function toSummary(product: MockProduct) {
-  return {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    availability: product.availability,
-    imageUrl: product.imageUrl,
-  };
+/** Товар, який зараз бачить покупець; прихований, видалений чи неіснуючий — undefined */
+function findVisibleProduct(productId: number) {
+  const state = loadCatalog();
+  const product = state.products.find((item) => item.id === productId);
+  return product && isProductVisible(state, product) ? product : undefined;
 }
 
 /** Перевірка доставки й оплати (FUN-06, таблиці 3.4 і 3.5) */
@@ -67,8 +63,8 @@ export class MockOrderService implements OrderService {
   async checkCart(productIds: number[]): Promise<CartCheckLine[]> {
     await delay(250);
     return productIds.map((productId) => {
-      const product = PRODUCTS.find((item) => item.id === productId);
-      return { productId, product: product ? toSummary(product) : null };
+      const product = findVisibleProduct(productId);
+      return { productId, product: product ? toProductSummary(product) : null };
     });
   }
 
@@ -117,7 +113,7 @@ export class MockOrderService implements OrderService {
     // А4, А5: товар зник, закінчився або змінив ціну
     const lines = request.items.map((item) => ({
       item,
-      product: PRODUCTS.find((product) => product.id === item.productId),
+      product: findVisibleProduct(item.productId),
     }));
     const changed = lines.some(
       ({ item, product }) =>
@@ -131,7 +127,9 @@ export class MockOrderService implements OrderService {
       );
     }
 
-    // кроки 12–13: сума за поточними цінами, номер DT-000001, перший запис історії
+    // кроки 12–13: сума за поточними цінами, номер DT-000001, перший запис історії.
+    // Видимий товар завжди має ціну (isProductVisible), тож ?? 0 — лише для типів.
+    const priced = lines.map(({ item, product }) => ({ item, name: product!.name, price: product!.price ?? 0 }));
     const now = new Date().toISOString();
     const id = nextOrderId(orders);
     const order: StoredOrder = {
@@ -139,13 +137,14 @@ export class MockOrderService implements OrderService {
       number: orderNumber(id),
       status: 'new',
       createdAt: now,
-      items: lines.map(({ item, product }) => ({
+      items: priced.map(({ item, name, price }) => ({
         productId: item.productId,
-        name: product!.name,
-        price: product!.price,
+        name,
+        price,
         quantity: item.quantity,
       })),
-      total: lines.reduce((sum, { item, product }) => sum + product!.price * item.quantity, 0),
+      // у копійках, щоб 0,1 + 0,2 не дали 0,30000000000000004
+      total: priced.reduce((sum, { item, price }) => sum + Math.round(price * 100) * item.quantity, 0) / 100,
       recipient: {
         fullName: request.recipient.fullName.trim(),
         phone: normalizePhone(request.recipient.phone),

@@ -1,6 +1,15 @@
+import type { AdminCategoryService } from './admin/AdminCategoryService';
+import type { AdminManufacturerService } from './admin/AdminManufacturerService';
 import type { AdminOrderService } from './admin/AdminOrderService';
+import type { AdminProductService } from './admin/AdminProductService';
+import { HttpAdminCategoryService } from './admin/HttpAdminCategoryService';
+import { HttpAdminManufacturerService } from './admin/HttpAdminManufacturerService';
 import { HttpAdminOrderService } from './admin/HttpAdminOrderService';
+import { HttpAdminProductService } from './admin/HttpAdminProductService';
+import { MockAdminCategoryService } from './admin/MockAdminCategoryService';
+import { MockAdminManufacturerService } from './admin/MockAdminManufacturerService';
 import { MockAdminOrderService } from './admin/MockAdminOrderService';
+import { MockAdminProductService } from './admin/MockAdminProductService';
 import { ApiClient } from './ApiClient';
 import type { AuthService } from './auth/AuthService';
 import { HttpAuthService } from './auth/HttpAuthService';
@@ -36,3 +45,15 @@ export const orderService: OrderService = USE_MOCKS
 export const adminOrderService: AdminOrderService = USE_MOCKS
   ? new MockAdminOrderService()
   : new HttpAdminOrderService(apiClient);
+
+export const adminProductService: AdminProductService = USE_MOCKS
+  ? new MockAdminProductService()
+  : new HttpAdminProductService(apiClient);
+
+export const adminCategoryService: AdminCategoryService = USE_MOCKS
+  ? new MockAdminCategoryService()
+  : new HttpAdminCategoryService(apiClient);
+
+export const adminManufacturerService: AdminManufacturerService = USE_MOCKS
+  ? new MockAdminManufacturerService()
+  : new HttpAdminManufacturerService(apiClient);

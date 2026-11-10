@@ -1,0 +1,156 @@
+@use '../abstracts' as *;
+
+// Блок: сторінка редагування в адмінці — форма ліворуч, панелі праворуч
+.admin-edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 28px;
+  align-items: start;
+
+  &__main {
+    min-width: 0;
+  }
+
+  &__aside {
+    @include flex(column);
+    gap: 16px;
+  }
+
+  &__back {
+    margin: -6px 0 16px;
+
+    a {
+      color: $color-primary;
+      font-weight: 700;
+    }
+  }
+
+  // поля форми у дві колонки
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 18px;
+  }
+
+  &__wide {
+    grid-column: 1 / -1;
+  }
+
+  &__specs {
+    min-width: 0;
+    margin: 8px 0 16px;
+    padding: 14px 16px 0;
+    border: 1px solid $color-border;
+    border-radius: 12px;
+    background-color: $color-surface;
+
+    > .admin-panel__text,
+    > .list-state {
+      margin-bottom: 16px;
+    }
+  }
+
+  &__legend {
+    padding: 0 6px;
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  &__submit {
+    padding: 12px 32px;
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+  }
+
+  &__photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: $color-bg;
+  }
+
+  &__caption {
+    margin: 8px 0 4px;
+    font-size: 14px;
+  }
+
+  // кнопка вибору файлу — це підпис до прихованого поля
+  &__upload {
+    display: block;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+
+    &:focus-within {
+      outline: 3px solid $color-focus;
+      outline-offset: 2px;
+    }
+
+    &--busy {
+      opacity: 0.7;
+      cursor: wait;
+    }
+  }
+
+  &__remove-photo,
+  &__cancel {
+    display: block;
+    margin-top: 10px;
+  }
+
+  @include respond-down($bp-laptop) {
+    grid-template-columns: 1fr;
+  }
+
+  @include respond-down($bp-phone) {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Форма категорії
+.admin-category-form {
+  max-width: 560px;
+}
+
+// Блок: шаблон характеристик категорії
+.admin-template {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid $color-border;
+
+  &__title {
+    margin: 0 0 6px;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  &__text {
+    margin-bottom: 14px;
+  }
+
+  &__add {
+    margin-top: 16px;
+    padding: 10px 20px;
+  }
+
+  &__form {
+    max-width: 720px;
+    margin-top: 16px;
+  }
+
+  &__buttons {
+    @include flex(row, flex-start, center);
+    gap: 16px;
+
+    .cart-button {
+      padding: 10px 24px;
+    }
+  }
+}

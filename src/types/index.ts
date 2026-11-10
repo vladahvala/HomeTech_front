@@ -292,3 +292,136 @@ export interface RegisterData {
   fullName: string;
   phone: string;
 }
+
+// ===== Адмінка: каталог (UC-ADM-PRD-01…05, UC-ADM-CTG-01, 02, UC-ADM-MNF-01) =====
+
+/** Звідки товар: прайс Katran (має код постачальника) або доданий вручну */
+export type ProductSource = 'katran' | 'manual';
+
+/** Значення характеристики товару: число, варіант переліку, так/ні або текст */
+export type CharacteristicValue = string | number | boolean;
+
+/** Категорія для адміністратора — разом із прихованими */
+export interface AdminCategory extends Category {
+  hidden: boolean;
+  /** Слова, з яких починається назва товару в прайсі, через кому (UC-IMP-01) */
+  importTemplate: string | null;
+  /** Невидалені товари саме цієї категорії */
+  productsCount: number;
+  childrenCount: number;
+}
+
+export interface CategoryInput {
+  name: string;
+  slug: string;
+  parentId: number | null;
+  order: number;
+  hidden: boolean;
+  importTemplate: string | null;
+}
+
+/** Характеристика з шаблону категорії (UC-ADM-CTG-02) */
+export interface Characteristic {
+  id: number;
+  categoryId: number;
+  name: string;
+  type: CharacteristicType;
+  unit: string | null;
+  isFilter: boolean;
+  order: number;
+  /** Варіанти для переліку (2–30); для інших типів — порожньо */
+  options: string[];
+  /** Скільки товарів мають значення — тип такої характеристики не змінюють */
+  valuesCount: number;
+}
+
+export interface CharacteristicInput {
+  name: string;
+  type: CharacteristicType;
+  unit: string | null;
+  isFilter: boolean;
+  order: number;
+  options: string[];
+}
+
+export interface AdminManufacturer extends Manufacturer {
+  productsCount: number;
+}
+
+export interface ManufacturerInput {
+  name: string;
+  country: string | null;
+}
+
+/** Рядок списку товарів в адмінці; закупівельна ціна й код — лише для адміністратора (SEC-06) */
+export interface AdminProductListItem {
+  id: number;
+  name: string;
+  article: string | null;
+  supplierCode: string | null;
+  source: ProductSource;
+  categoryId: number | null;
+  categoryName: string | null;
+  manufacturerName: string | null;
+  price: number | null;
+  purchasePrice: number | null;
+  availability: Availability;
+  published: boolean;
+  imageUrl: string | null;
+  updatedAt: string;
+}
+
+/** Фільтри списку товарів; живуть в адресі сторінки */
+export interface AdminProductQuery {
+  /** Назва, артикул або код постачальника */
+  search?: string;
+  /** id категорії або 'none' — товари без категорії */
+  category?: number | 'none';
+  manufacturer?: number;
+  published?: boolean;
+  availability?: Availability;
+  source?: ProductSource;
+  page: number;
+}
+
+/** Товар для форми редагування */
+export interface AdminProduct {
+  id: number;
+  name: string;
+  availability: Availability;
+  categoryId: number | null;
+  manufacturer: Manufacturer | null;
+  article: string | null;
+  price: number | null;
+  purchasePrice: number | null;
+  warrantyMonths: number | null;
+  description: string;
+  assemblyCountry: string | null;
+  assemblyCity: string | null;
+  /** id характеристики → значення */
+  values: Record<number, CharacteristicValue>;
+  published: boolean;
+  source: ProductSource;
+  supplierCode: string | null;
+  /** Власне фото важливіше за фото з прайсу (FUN-10) */
+  ownImageUrl: string | null;
+  supplierImageUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Що Адміністратор вводить у формі товару (UC-ADM-PRD-02, 03) */
+export interface ProductInput {
+  name: string;
+  availability: Availability;
+  categoryId: number | null;
+  /** Назва виробника; нова назва створює нового виробника, порожньо — без виробника */
+  manufacturerName: string;
+  article: string;
+  price: number | null;
+  warrantyMonths: number | null;
+  description: string;
+  assemblyCountry: string;
+  assemblyCity: string;
+  values: Record<number, CharacteristicValue>;
+}

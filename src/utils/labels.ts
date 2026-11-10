@@ -6,6 +6,7 @@ import type {
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
+  ProductSource,
   SortOrder,
 } from '../types';
 
@@ -111,3 +112,17 @@ export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
 export function canClientCancel(status: OrderStatus): boolean {
   return status === 'new' || status === 'processing';
 }
+
+// ===== Адмінка: каталог =====
+
+export const SOURCE_LABELS: Record<ProductSource, string> = {
+  katran: 'Прайс Katran',
+  manual: 'Вручну',
+};
+
+export const CHARACTERISTIC_TYPE_LABELS: Record<CharacteristicType, string> = {
+  number: 'Число',
+  enum: 'Перелік',
+  boolean: 'Так/ні',
+  text: 'Текст',
+};

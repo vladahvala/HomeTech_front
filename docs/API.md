@@ -226,6 +226,108 @@ AdminOrder extends Order {
 
 У відповідях `/api/orders/my…` історія містить статуси, дати й примітки, але не те, хто саме з персоналу змінив статус (FUN-05). Фронт клієнта поле `by` не показує; бекенд може його не віддавати або віддавати узагальнено («Магазин» / «Клієнт»).
 
+## Адмінка: товари (UC-ADM-PRD-01…05)
+
+Лише для ролі `admin` (`401` / `403`, як у замовленнях). Закупівельну ціну й код постачальника віддаємо тільки тут — у каталозі покупця їх немає (SEC-06).
+
+| Запит | Тіло | Відповідь | Помилки |
+|---|---|---|---|
+| `GET /api/admin/products?search=чайник&category=3&manufacturer=7&published=false&availability=in_stock&source=katran&page=1` | — | `Page<AdminProductListItem>` — невидалені, **нещодавно змінені першими**, по 20 | — |
+| `GET /api/admin/products/:id` | — | `AdminProduct` | `404` (зокрема видалений) |
+| `POST /api/admin/products` | `ProductInput` | `AdminProduct` | `400 VALIDATION_ERROR` з `fields` |
+| `PUT /api/admin/products/:id` | `ProductInput` | `AdminProduct` | `400 VALIDATION_ERROR`, `404` |
+| `PATCH /api/admin/products/:id/publication` | `{ published: boolean }` | `AdminProduct` | `400 CANNOT_PUBLISH` — бракує категорії чи ціни, у `message` сказано чого |
+| `DELETE /api/admin/products/:id` | — | `204` | `404` |
+| `POST /api/admin/products/:id/photo` | `multipart/form-data`, поле `photo` | `AdminProduct` | `400 INVALID_PHOTO` — не JPEG/PNG/WebP або > 5 МБ |
+| `DELETE /api/admin/products/:id/photo` | — | `AdminProduct` (власне фото прибрано) | `404` |
+
+Параметри списку (усі необов'язкові):
+- `search` — кожне слово в назві, артикулі або коді постачальника, без урахування регістру;
+- `category` — id категорії (з її підкатегоріями) або `none` — товари без категорії;
+- `manufacturer` — id; `published` — `true`/`false`; `availability` — `in_stock`/`expected`/`out_of_stock`;
+- `source` — `katran` (є код постачальника) або `manual`.
+
+```ts
+AdminProductListItem {
+  id, name, article: string | null, supplierCode: string | null, source: 'katran' | 'manual',
+  categoryId: number | null, categoryName: string | null, manufacturerName: string | null,
+  price: number | null, purchasePrice: number | null, availability, published: boolean,
+  imageUrl: string | null /* власне, інакше з прайсу */, updatedAt: ISO
+}
+AdminProduct {
+  id, name, availability, categoryId: number | null, manufacturer: Manufacturer | null,
+  article, price, purchasePrice, warrantyMonths: number | null, description,
+  assemblyCountry, assemblyCity, values: Record<characteristicId, number | string | boolean>,
+  published, source, supplierCode, ownImageUrl: string | null, supplierImageUrl: string | null,
+  createdAt, updatedAt
+}
+ProductInput {
+  name /* 3–200 */, availability, categoryId: number | null,
+  manufacturerName: string /* '' — без виробника; нова назва — новий виробник */,
+  article: string, price: number | null /* 0,01–9 999 999,99 */, warrantyMonths: number | null /* 0–120 */,
+  description /* до 5000 */, assemblyCountry, assemblyCity,
+  values: Record<characteristicId, number | string | boolean>
+}
+```
+
+Правила:
+- **Створення вручну**: без коду постачальника; товар з категорією й ціною одразу `published: true`, інакше прихований.
+- **Категорія** — лише без підкатегорій, інакше `fields.categoryId`. Значення характеристик приймаються тільки з шаблону обраної категорії; під час зміни категорії значення попередньої видаляються.
+- **Значення**: `number` — число, `boolean` — `true`/`false`, `enum` — один з `options`, `text` — до 200 символів. Помилки — у `fields["value-<id>"]`. Характеристики необов'язкові.
+- **Виробник** шукається за назвою без урахування регістру; якщо такого немає — створюється з `country: null`.
+- Якщо після редагування в товару немає категорії чи ціни — `published` стає `false`.
+- **Видалення** — позначка `deleted`: товар зникає з каталогу, пошуку, цього списку; позиції замовлень зберігаються; імпорт його пропускає (FUN-08). У звірці кошика такий товар — `product: null`.
+- **Фото**: показується власне, інакше з прайсу, інакше заглушка (FUN-10). Імпорт оновлює лише фото з прайсу.
+- Для товару з прайсу імпорт оновлює ціну, закупівельну ціну, наявність, гарантію й фото з прайсу; решту полів (зокрема змінені Адміністратором) зберігає.
+
+## Адмінка: категорії й шаблони (UC-ADM-CTG-01, 02)
+
+| Запит | Тіло | Відповідь | Помилки |
+|---|---|---|---|
+| `GET /api/admin/categories` | — | `AdminCategory[]` — усі, з прихованими | — |
+| `POST /api/admin/categories` | `CategoryInput` | `AdminCategory` | `400 VALIDATION_ERROR`, `409 NAME_TAKEN` (`fields.name`), `409 SLUG_TAKEN` (`fields.slug`) |
+| `PUT /api/admin/categories/:id` | `CategoryInput` | `AdminCategory` | ті самі, `404` |
+| `DELETE /api/admin/categories/:id` | — | `204` | `409 CATEGORY_NOT_EMPTY` — є товари або підкатегорії |
+| `GET /api/admin/categories/:id/characteristics` | — | `Characteristic[]` за `order` | `404` |
+| `POST /api/admin/categories/:id/characteristics` | `CharacteristicInput` | `Characteristic` | `400 VALIDATION_ERROR` (зокрема в категорії є підкатегорії), `409 NAME_TAKEN` |
+| `PUT /api/admin/characteristics/:id` | `CharacteristicInput` | `Characteristic` | `409 TYPE_LOCKED` (`fields.type`), `409 OPTION_IN_USE` (`fields.options`), `409 NAME_TAKEN` |
+| `DELETE /api/admin/characteristics/:id` | — | `204` — разом зі значеннями в товарах | `404` |
+
+```ts
+AdminCategory extends Category { hidden: boolean, importTemplate: string | null, productsCount, childrenCount }
+CategoryInput { name /* 2–60, унікальна без регістру */, slug /* a-z, 0-9, дефіс; 2–60; унікальний */,
+                parentId: number | null, order /* 0–9999 */, hidden, importTemplate: string | null /* до 200 */ }
+Characteristic { id, categoryId, name, type: 'number' | 'enum' | 'boolean' | 'text', unit: string | null,
+                 isFilter, order, options: string[], valuesCount /* товарів зі значенням */ }
+CharacteristicInput { name /* до 60, унікальна в категорії */, type, unit /* до 20 */, isFilter, order,
+                      options: string[] /* для enum 2–30 різних, інакше [] */ }
+```
+
+Правила категорій:
+- **Два рівні**: батьківська — лише верхнього рівня; категорія з підкатегоріями не може стати дочірньою (`fields.parentId`).
+- Товари й шаблон — тільки в категорій без підкатегорій, тому підкатегорію не додають до категорії, де вже є товари (`fields.parentId`).
+- **Прихована** категорія прибирає з каталогу себе, свої підкатегорії й товари, але їхні `published` не змінює.
+- `importTemplate` — слова через кому, з яких починається назва товару в прайсі (`Електрочайник, Чайник`); за ним імпорт кладе новий товар у категорію прихованим (UC-IMP-01).
+- Після будь-якої зміни каталог покупця (меню, фільтри, форма товару) бачить новий стан з наступного запиту (SUP-02).
+
+Правила шаблону:
+- Тип характеристики, що має значення в товарах, не змінюється — лише видаленням і створенням заново (`TYPE_LOCKED`).
+- Варіант переліку, який мають товари, прибрати не можна (`OPTION_IN_USE`).
+- Перед видаленням фронт показує `valuesCount`; видалення прибирає значення з усіх товарів.
+
+## Адмінка: виробники (UC-ADM-MNF-01)
+
+| Запит | Тіло | Відповідь | Помилки |
+|---|---|---|---|
+| `GET /api/admin/manufacturers` | — | `AdminManufacturer[]` за назвою | — |
+| `PUT /api/admin/manufacturers/:id` | `{ name /* 1–100 */, country: string \| null /* до 60 */ }` | `AdminManufacturer` | `400 VALIDATION_ERROR`, `409 NAME_TAKEN` (`fields.name`) — назва іншого виробника без урахування регістру, `404` |
+
+```ts
+AdminManufacturer extends Manufacturer { productsCount }
+```
+
+Нових виробників створюють імпорт і форма товару (`manufacturerName`).
+
 ## Далі
 
-Адмінка: товари, категорії з шаблонами характеристик, виробники (UC-ADM-CAT-*), клієнти та імпорт із Катрану — опишемо тут, коли до них дійдемо.
+Адмінка: клієнти (UC-ADM-CLI-01…04) та імпорт прайсу Katran (UC-IMP-01) — опишемо тут, коли до них дійдемо.

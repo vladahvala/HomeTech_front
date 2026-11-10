@@ -2,7 +2,7 @@
 // Справжній бекенд зберігає замовлення в базі даних.
 
 import type { DeliveryInfo, Order, OrderStatus, OrderStatusChange, PaymentMethod } from '../../types';
-import { PRODUCTS } from './catalogData';
+import { loadCatalog } from './catalogStore';
 
 const ORDERS_KEY = 'hometech-mock-orders';
 const SEEDED_KEY = 'hometech-mock-demo-seeded';
@@ -146,12 +146,13 @@ function seedDemoOrders(): void {
   const now = Date.now();
   const day = 24 * 60 * 60 * 1000;
 
+  const products = loadCatalog().products;
   for (const demo of DEMO) {
     const id = nextOrderId(orders);
     const created = now - demo.daysAgo * day - 3 * 60 * 60 * 1000;
     const items = demo.items.flatMap(([productId, quantity]) => {
-      const product = PRODUCTS.find((item) => item.id === productId);
-      return product ? [{ productId, name: product.name, price: product.price, quantity }] : [];
+      const product = products.find((item) => item.id === productId);
+      return product?.price ? [{ productId, name: product.name, price: product.price, quantity }] : [];
     });
 
     const history: OrderStatusChange[] = [

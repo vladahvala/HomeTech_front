@@ -40,9 +40,16 @@ export class ApiClient {
     return this.request<T>('DELETE', path);
   }
 
+  /** Завантаження файлу (multipart/form-data) — фото товару, прайс */
+  upload<T>(path: string, form: FormData): Promise<T> {
+    return this.request<T>('POST', path, form);
+  }
+
   private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
     const headers: Record<string, string> = { Accept: 'application/json' };
-    if (body !== undefined) headers['Content-Type'] = 'application/json';
+    const isForm = body instanceof FormData;
+    // для FormData заголовок із межею (boundary) браузер ставить сам
+    if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
 
     let response: Response;
     try {
@@ -50,7 +57,7 @@ export class ApiClient {
         method,
         headers,
         credentials: 'include',
-        body: body === undefined ? undefined : JSON.stringify(body),
+        body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
       });
     } catch {
       throw new ApiError(

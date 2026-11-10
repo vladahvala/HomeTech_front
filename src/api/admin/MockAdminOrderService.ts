@@ -6,29 +6,20 @@ import type {
   Page,
   PaymentUpdateRequest,
   StatusChangeRequest,
-  User,
 } from '../../types';
 import { ORDER_STATUS_LABELS } from '../../utils/labels';
 import { allowedTransitions } from '../../utils/orderTransitions';
 import { validateInternalNote, validateStatusNote } from '../../validation/rules';
 import { ApiError } from '../ApiError';
-import { getMockSessionUser, getMockUserById } from '../auth/MockAuthService';
+import { getMockUserById } from '../auth/MockAuthService';
 import { loadOrders, saveOrders, toClientOrder } from '../mock/orderStore';
 import type { StoredOrder } from '../mock/orderStore';
 import type { AdminOrderService } from './AdminOrderService';
+import { delay, requireAdmin } from './mockAdmin';
 
 // ТИМЧАСОВО, поки немає бекенду. Правила — як має робити бекенд за UC-ADM-ORD-01…03.
 
 const PAGE_SIZE = 20;
-const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
-
-/** Кожна дія адмінки перевіряє роль за «базою» (SEC-03) */
-function requireAdmin(): User {
-  const user = getMockSessionUser();
-  if (!user) throw new ApiError(401, 'UNAUTHORIZED', 'Сесія завершилась. Увійдіть знову.');
-  if (user.role !== 'admin') throw new ApiError(403, 'FORBIDDEN', 'Дія доступна лише адміністратору.');
-  return user;
-}
 
 function customerOf(order: StoredOrder): OrderCustomer {
   const user = getMockUserById(order.userId);
