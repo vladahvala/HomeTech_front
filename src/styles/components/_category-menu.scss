@@ -28,7 +28,7 @@
     transition: opacity 0.3s ease-out, max-height 0.3s ease-out;
   
     // відкритий стан (перемикається у JS)
-    &.show {
+    &--open {
       max-height: 500px;
       opacity: 1;
       padding: 5px 0;
