@@ -1,0 +1,49 @@
+@use '../abstracts' as *;
+
+// Блок: кабінет клієнта й сторінки адмінки
+.account-page {
+  width: 100%;
+  max-width: $container-max;
+  margin: 0 auto;
+  padding: 30px 40px;
+  box-sizing: border-box;
+
+  &__title {
+    margin: 0 0 20px;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  &__details {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px 24px;
+    margin: 0 0 20px;
+    font-size: 16px;
+
+    dt {
+      font-weight: 700;
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+
+  &__note {
+    font-size: 15px;
+    color: #6b7280;
+  }
+
+  @include respond-down($bp-phone) {
+    padding: 20px;
+  }
+}
+
+// Повідомлення «Завантаження…» на місці сторінки
+.page-status {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #6b7280;
+}

@@ -11,6 +11,9 @@
   background-position: center;
   background-repeat: no-repeat;
 
+  // приховані слайди стоять за правим краєм — без цього сторінка прокручувалась убік
+  overflow: hidden;
+
   &__track {
     @include flex(row, flex-start, center);
 

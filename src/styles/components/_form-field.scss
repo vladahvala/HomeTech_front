@@ -1,0 +1,57 @@
+@use '../abstracts' as *;
+
+// Блок: поле форми з підписом, помилкою й підказкою
+.form-field {
+  margin-bottom: 16px;
+
+  &__label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  &__input {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+    background-color: $color-surface;
+    font: inherit;
+    font-size: 16px;
+    transition:
+      border-color $transition-base,
+      box-shadow $transition-base;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
+    }
+
+    &--invalid {
+      border-color: $color-danger;
+
+      &:focus {
+        border-color: $color-danger;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+      }
+    }
+  }
+
+  &__error {
+    margin: 6px 0 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: $color-danger;
+  }
+
+  &__hint {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #6b7280; // темніший за $color-gray, щоб контраст був ≥ 4,5:1 (WCAG AA)
+  }
+}

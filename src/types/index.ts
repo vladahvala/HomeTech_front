@@ -22,6 +22,29 @@ export interface CartItem {
   quantity: number;
 }
 
+/** Ролі за SRS: «Клієнт» і «Адміністратор». Гість — це просто відсутність входу */
+export type UserRole = 'client' | 'admin';
+
+export interface User {
+  id: number;
+  email: string;
+  fullName: string;
+  phone: string;
+  role: UserRole;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  fullName: string;
+  phone: string;
+}
+
 export interface Slide {
   id: number;
   image: string;

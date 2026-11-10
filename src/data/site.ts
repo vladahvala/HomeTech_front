@@ -4,6 +4,7 @@ export const SITE_NAME = 'ДомТех';
 export const SITE_SLOGAN = 'Технології для комфортного життя';
 export const SITE_TITLE = 'ДомТех — магазин техніки';
 
+// Посилання ведуть на розділи головної, тому працюють і зі сторінки товару
 export const mainMenu: NavLink[] = [
   { href: '/', label: 'Головна' },
   { href: '/#catalog', label: 'Каталог' },

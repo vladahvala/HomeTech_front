@@ -11,7 +11,7 @@
   box-sizing: border-box;
   text-align: center;
   background-color: $color-surface;
-  border: 1px solid $color-border;  
+  border: 1px solid $color-border;
   cursor: pointer; // клік по картці відкриває сторінку товару
   transition:
     transform $transition-base,

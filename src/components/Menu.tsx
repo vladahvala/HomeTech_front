@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import type { NavLink } from '../types';
 import CartWidget from './CartWidget';
 import Logo from './Logo';
+import UserMenu from './UserMenu';
 
 export default function Menu({ links }: { links: NavLink[] }) {
   return (
@@ -14,7 +15,10 @@ export default function Menu({ links }: { links: NavLink[] }) {
           </Link>
         ))}
       </div>
-      <CartWidget />
+      <div className="menu__actions">
+        <UserMenu />
+        <CartWidget />
+      </div>
     </nav>
   );
 }

@@ -8,6 +8,8 @@
 @use 'layout/page';
 @use 'layout/footer';
 @use 'layout/product-page';
+@use 'layout/auth-page';
+@use 'layout/account-page';
 
 // Components
 @use 'components/logo';
@@ -23,11 +25,11 @@
 @use 'components/about';
 @use 'components/social-links';
 @use 'components/feedback-modal';
-
-
 @use 'components/cart';
 @use 'components/nav-arrow';
 @use 'components/gallery';
 @use 'components/lightbox';
 @use 'components/quantity';
 @use 'components/breadcrumbs';
+@use 'components/form-field';
+@use 'components/user-menu';

@@ -42,6 +42,13 @@
     }
   }
 
+  // Праворуч: акаунт і кошик
+  &__actions {
+    @include flex(row, flex-end, center);
+    flex-shrink: 0;
+    gap: 4px;
+  }
+
   &__link {
     position: relative;
     display: inline-flex;
@@ -60,6 +67,11 @@
 
     &:last-child::after {
       content: '';
+    }
+
+    // середні екрани: трохи менший шрифт, щоб поруч помістились акаунт і кошик
+    @include respond-down($bp-desktop) {
+      font-size: 22px;
     }
 
     &:hover .menu__text::after {
@@ -91,6 +103,19 @@
       background: $gradient-accent;
       opacity: 0;
       transition: opacity 300ms ease-in-out;
+    }
+  }
+
+  // Ноутбуки й планшети: пункти меню переносяться в окремий рядок під логотипом
+  @include respond-down($bp-laptop) {
+    flex-wrap: wrap;
+    row-gap: 12px;
+
+    &__list {
+      order: 3;
+      width: 100%;
+      flex-wrap: wrap;
+      row-gap: 8px;
     }
   }
 

@@ -24,11 +24,11 @@ $gradient-accent: linear-gradient(to right, #0D9488, #2DD4BF);
 $gradient-accent-vertical: linear-gradient(to top, #0D9488, #2DD4BF);
 
 // ===== Брейкпоінти =====
+$bp-desktop: 1440px;
+$bp-laptop: 1360px;
 $bp-tablet: 1024px;
 $bp-phone: 768px;
 $bp-small: 738px;
-
-$bp-desktop: 1440px;
 
 // ===== Інше =====
 $transition-base: 0.3s ease-in-out;
