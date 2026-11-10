@@ -1,4 +1,4 @@
-import type { LoginData, RegisterData, User } from '../../types';
+import type { LoginData, PasswordChangeData, ProfileData, RegisterData, User } from '../../types';
 
 /**
  * Що фронт уміє робити з входом.
@@ -10,4 +10,11 @@ export interface AuthService {
   login(data: LoginData): Promise<User>;
   register(data: RegisterData): Promise<User>;
   logout(): Promise<void>;
+  /** UC-ACC-04: ПІБ, телефон, адреса за замовчуванням → оновлений користувач */
+  updateProfile(data: ProfileData): Promise<User>;
+  /**
+   * UC-ACC-05: перевіряє поточний пароль і зберігає новий.
+   * Сесії на інших пристроях сервер завершує, поточна лишається.
+   */
+  changePassword(data: PasswordChangeData): Promise<void>;
 }

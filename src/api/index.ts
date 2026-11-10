@@ -1,3 +1,6 @@
+import type { AdminOrderService } from './admin/AdminOrderService';
+import { HttpAdminOrderService } from './admin/HttpAdminOrderService';
+import { MockAdminOrderService } from './admin/MockAdminOrderService';
 import { ApiClient } from './ApiClient';
 import type { AuthService } from './auth/AuthService';
 import { HttpAuthService } from './auth/HttpAuthService';
@@ -29,3 +32,7 @@ export const catalogService: CatalogService = USE_MOCKS
 export const orderService: OrderService = USE_MOCKS
   ? new MockOrderService()
   : new HttpOrderService(apiClient);
+
+export const adminOrderService: AdminOrderService = USE_MOCKS
+  ? new MockAdminOrderService()
+  : new HttpAdminOrderService(apiClient);

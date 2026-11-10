@@ -133,6 +133,9 @@ export type DeliveryInterval = '09-12' | '12-15' | '15-18' | '18-21';
 /** Статуси й дозволені переходи — таблиця 3.3 */
 export type OrderStatus = 'new' | 'processing' | 'assembled' | 'shipped' | 'delivered' | 'cancelled';
 
+/** Статус оплати: «Не оплачено» (початковий) або «Оплачено»; встановлює Адміністратор */
+export type PaymentStatus = 'unpaid' | 'paid';
+
 export type DeliveryInfo =
   | { method: 'pickup' }
   | { method: 'courier'; address: string; date: string; interval: DeliveryInterval }
@@ -167,8 +170,19 @@ export interface Order {
   recipient: { fullName: string; phone: string };
   delivery: DeliveryInfo;
   payment: PaymentMethod;
+  paymentStatus: PaymentStatus;
   comment: string | null;
   history: OrderStatusChange[];
+}
+
+/** Рядок архіву замовлень (UC-ORD-02) */
+export interface OrderListItem {
+  number: string;
+  createdAt: string;
+  /** Скільки одиниць товару в замовленні */
+  itemsCount: number;
+  total: number;
+  status: OrderStatus;
 }
 
 export interface CreateOrderRequest {
@@ -206,6 +220,70 @@ export interface User {
 export interface LoginData {
   email: string;
   password: string;
+}
+
+// ===== Адмінка: замовлення (UC-ADM-ORD-01…03) =====
+
+export interface OrderCustomer {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+}
+
+/** Рядок списку замовлень магазину */
+export interface AdminOrderListItem extends OrderListItem {
+  customer: OrderCustomer;
+  paymentStatus: PaymentStatus;
+  delivery: DeliveryMethod;
+}
+
+/** Замовлення для адміністратора: плюс клієнт, службова примітка й дозволені переходи */
+export interface AdminOrder extends Order {
+  customer: OrderCustomer;
+  /** Бачить лише Адміністратор (UC-ADM-ORD-03) */
+  internalNote: string | null;
+  /** Куди можна перевести зараз (таблиця 3.3); порожньо для кінцевих статусів */
+  allowedTransitions: OrderStatus[];
+}
+
+/** Фільтри списку замовлень; живуть в адресі сторінки */
+export interface AdminOrderQuery {
+  statuses: OrderStatus[];
+  /** Період оформлення, 'YYYY-MM-DD' включно */
+  dateFrom?: string;
+  dateTo?: string;
+  /** ПІБ, email або телефон клієнта — частина тексту */
+  customer?: string;
+  /** Номер замовлення або його частина */
+  number?: string;
+  page: number;
+}
+
+export interface StatusChangeRequest {
+  /** Статус, який бачив Адміністратор, — щоб не перезаписати чужу зміну (А2, REL-03) */
+  expectedStatus: OrderStatus;
+  status: OrderStatus;
+  /** До 500 символів; для «Скасоване» — обов'язкова, від 3 символів */
+  note: string;
+}
+
+export interface PaymentUpdateRequest {
+  paymentStatus: PaymentStatus;
+  /** До 1000 символів */
+  internalNote: string;
+}
+
+/** Що Клієнт змінює в профілі (UC-ACC-04); email змінює лише Адміністратор */
+export interface ProfileData {
+  fullName: string;
+  phone: string;
+  deliveryAddress: string | null;
+}
+
+export interface PasswordChangeData {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface RegisterData {

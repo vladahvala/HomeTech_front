@@ -14,6 +14,19 @@
     font-weight: 700;
   }
 
+  // меню розділів ліворуч, вміст праворуч
+  &__layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+    margin-top: 16px;
+  }
+
+  &__content {
+    min-width: 0;
+  }
+
   &__details {
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -35,8 +48,19 @@
     color: #6b7280;
   }
 
+  @include respond-down($bp-tablet) {
+    &__layout {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
   @include respond-down($bp-phone) {
-    padding: 20px;
+    padding: 20px 16px;
+
+    &__title {
+      font-size: 22px;
+    }
   }
 }
 

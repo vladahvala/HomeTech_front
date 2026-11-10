@@ -1,4 +1,4 @@
-import type { CartCheckLine, CreateOrderRequest, Order } from '../../types';
+import type { CartCheckLine, CreateOrderRequest, Order, OrderListItem, Page } from '../../types';
 import type { ApiClient } from '../ApiClient';
 import type { OrderService } from './OrderService';
 
@@ -16,5 +16,17 @@ export class HttpOrderService implements OrderService {
 
   createOrder(request: CreateOrderRequest): Promise<Order> {
     return this.api.post<Order>('/orders', request);
+  }
+
+  listMyOrders(page: number): Promise<Page<OrderListItem>> {
+    return this.api.get<Page<OrderListItem>>(`/orders/my?page=${page}`);
+  }
+
+  getMyOrder(number: string): Promise<Order> {
+    return this.api.get<Order>(`/orders/my/${encodeURIComponent(number)}`);
+  }
+
+  cancelMyOrder(number: string, reason: string): Promise<Order> {
+    return this.api.post<Order>(`/orders/my/${encodeURIComponent(number)}/cancel`, { reason });
   }
 }

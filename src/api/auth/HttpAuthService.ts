@@ -1,4 +1,4 @@
-import type { LoginData, RegisterData, User } from '../../types';
+import type { LoginData, PasswordChangeData, ProfileData, RegisterData, User } from '../../types';
 import type { ApiClient } from '../ApiClient';
 import { ApiError } from '../ApiError';
 import type { AuthService } from './AuthService';
@@ -31,5 +31,13 @@ export class HttpAuthService implements AuthService {
 
   async logout(): Promise<void> {
     await this.api.post<void>('/auth/logout');
+  }
+
+  updateProfile(data: ProfileData): Promise<User> {
+    return this.api.patch<User>('/account/profile', data);
+  }
+
+  async changePassword(data: PasswordChangeData): Promise<void> {
+    await this.api.post<void>('/account/password', data);
   }
 }

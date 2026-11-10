@@ -1,0 +1,92 @@
+@use '../abstracts' as *;
+
+// Блок: замовлення в адмінці — деталі ліворуч, панелі дій праворуч
+.admin-order {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 28px;
+  align-items: start;
+  transition: opacity $transition-base;
+
+  &--loading {
+    opacity: 0.6;
+  }
+
+  &__main {
+    min-width: 0;
+  }
+
+  &__aside {
+    @include flex(column);
+    gap: 16px;
+  }
+
+  // на вужчих екранах панелі дій — під деталями
+  @include respond-down($bp-laptop) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Блок: панель дії в адмінці (зміна статусу, оплата)
+.admin-panel {
+  padding: 16px;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  background-color: $color-surface;
+
+  &__title {
+    margin: 0 0 12px;
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  &__text {
+    margin: 0;
+    color: #4b5563;
+  }
+
+  &__fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  &__label {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+
+  &__confirm {
+    @include flex(row, flex-start, center);
+    gap: 8px;
+    margin: 6px 0 10px;
+    font-weight: 700;
+    color: $color-danger;
+
+    input {
+      width: 18px;
+      height: 18px;
+      accent-color: $color-danger;
+    }
+  }
+
+  &__submit {
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+
+    &--danger {
+      background: $color-danger;
+
+      &:hover {
+        background: #b91c1c;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+  }
+}

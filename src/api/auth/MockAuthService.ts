@@ -1,5 +1,13 @@
-import type { LoginData, RegisterData, User } from '../../types';
-import { normalizePhone, validateRegistration } from '../../validation/rules';
+import type { LoginData, PasswordChangeData, ProfileData, RegisterData, User } from '../../types';
+import {
+  normalizePhone,
+  validateFullName,
+  validateOptionalAddress,
+  validatePassword,
+  validatePhone,
+  validateRegistration,
+} from '../../validation/rules';
+import type { FieldErrors } from '../ApiError';
 import { ApiError } from '../ApiError';
 import type { AuthService } from './AuthService';
 
@@ -39,6 +47,20 @@ const SEED_ACCOUNTS: MockAccount[] = [
 ];
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Обліковий запис за id — для моків адмінки (контакти клієнта в замовленні) */
+export function getMockUserById(id: number): User | null {
+  try {
+    const stored = localStorage.getItem(ACCOUNTS_KEY);
+    const accounts: MockAccount[] = stored ? JSON.parse(stored) : SEED_ACCOUNTS;
+    const account = accounts.find((item) => item.id === id);
+    if (!account) return null;
+    const { password: _password, isActive: _isActive, ...user } = account;
+    return { ...user, deliveryAddress: user.deliveryAddress ?? null };
+  } catch {
+    return null;
+  }
+}
 
 /** Хто «увійшов» у тимчасовому режимі — для інших моків (замовлення тощо) */
 export function getMockSessionUser(): User | null {
@@ -117,6 +139,60 @@ export class MockAuthService implements AuthService {
   async logout(): Promise<void> {
     await delay(150);
     localStorage.removeItem(SESSION_KEY);
+  }
+
+  async updateProfile(data: ProfileData): Promise<User> {
+    await delay();
+    const account = this.requireSession();
+
+    const errors: FieldErrors = {};
+    const fullName = validateFullName(data.fullName);
+    const phone = validatePhone(data.phone);
+    const address = validateOptionalAddress(data.deliveryAddress ?? '');
+    if (fullName) errors.fullName = fullName;
+    if (phone) errors.phone = phone;
+    if (address) errors.deliveryAddress = address;
+    if (Object.keys(errors).length > 0) {
+      throw new ApiError(400, 'VALIDATION_ERROR', 'Перевірте виділені поля.', errors);
+    }
+
+    const updated: MockAccount = {
+      ...account,
+      fullName: data.fullName.trim(),
+      phone: normalizePhone(data.phone),
+      deliveryAddress: data.deliveryAddress?.trim() || null,
+    };
+    this.saveAccounts(this.loadAccounts().map((item) => (item.id === updated.id ? updated : item)));
+    return this.toUser(updated);
+  }
+
+  async changePassword({ currentPassword, newPassword }: PasswordChangeData): Promise<void> {
+    await delay();
+    const account = this.requireSession();
+
+    if (account.password !== currentPassword) {
+      const message = 'Поточний пароль неправильний. Перевірте розкладку й Caps Lock.';
+      throw new ApiError(400, 'WRONG_PASSWORD', message, { currentPassword: message });
+    }
+    const error = validatePassword(newPassword);
+    if (error) {
+      throw new ApiError(400, 'VALIDATION_ERROR', 'Перевірте виділені поля.', { newPassword: error });
+    }
+
+    // справжній сервер тут ще завершує сесії на інших пристроях
+    this.saveAccounts(
+      this.loadAccounts().map((item) => (item.id === account.id ? { ...item, password: newPassword } : item)),
+    );
+  }
+
+  /** Обліковий запис поточної сесії або 401, як відповів би сервер */
+  private requireSession(): MockAccount {
+    const id = Number(localStorage.getItem(SESSION_KEY));
+    const account = this.loadAccounts().find((item) => item.id === id && item.isActive);
+    if (!account) {
+      throw new ApiError(401, 'UNAUTHORIZED', 'Сесія завершилась. Увійдіть знову.');
+    }
+    return account;
   }
 
   private findByEmail(email: string): MockAccount | undefined {

@@ -5,6 +5,7 @@ import type {
   DeliveryMethod,
   OrderStatus,
   PaymentMethod,
+  PaymentStatus,
   SortOrder,
 } from '../types';
 
@@ -100,3 +101,13 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   delivered: 'Поставлене',
   cancelled: 'Скасоване',
 };
+
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  unpaid: 'Не оплачено',
+  paid: 'Оплачено',
+};
+
+/** Клієнт може скасувати лише «Нове» й «В обробці» (таблиця 3.3) */
+export function canClientCancel(status: OrderStatus): boolean {
+  return status === 'new' || status === 'processing';
+}

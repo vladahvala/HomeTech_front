@@ -58,10 +58,18 @@ export default function UserMenu() {
                   Адмінка
                 </Link>
               ) : (
-                <Link className="user-menu__link" to="/account" onClick={close}>
-                  Особистий кабінет
-                </Link>
+                <>
+                  <Link className="user-menu__link" to="/account/orders" onClick={close}>
+                    Мої замовлення
+                  </Link>
+                  <Link className="user-menu__link" to="/account/profile" onClick={close}>
+                    Профіль
+                  </Link>
+                </>
               )}
+              <Link className="user-menu__link" to="/account/password" onClick={close}>
+                Зміна пароля
+              </Link>
 
               <button type="button" className="user-menu__link" onClick={handleLogout}>
                 Вийти

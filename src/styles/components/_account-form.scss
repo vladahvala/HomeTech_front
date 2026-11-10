@@ -1,0 +1,21 @@
+@use '../abstracts' as *;
+
+// Блок: форми кабінету (профіль, пароль)
+.account-form {
+  max-width: 480px;
+
+  &__submit {
+    padding: 12px 28px;
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+  }
+
+  // email лише для читання
+  input[readonly] {
+    background-color: $color-bg;
+    color: #4b5563;
+  }
+}

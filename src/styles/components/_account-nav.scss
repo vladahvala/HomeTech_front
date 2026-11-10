@@ -1,0 +1,47 @@
+@use '../abstracts' as *;
+
+// Блок: меню розділів кабінету
+.account-nav {
+  @include flex(column);
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  background-color: $color-surface;
+
+  &__user {
+    margin: 0 0 8px;
+    padding: 0 8px 10px;
+    border-bottom: 1px solid $color-border;
+    font-weight: 700;
+  }
+
+  &__link {
+    padding: 8px;
+    border-radius: 6px;
+    color: $color-text-muted;
+    text-decoration: none;
+
+    &:hover {
+      background-color: $color-bg;
+      color: $color-primary;
+    }
+
+    // поточний розділ: колір і жирний шрифт
+    &--active {
+      background-color: rgba(13, 148, 136, 0.1);
+      color: #0b7a70;
+      font-weight: 700;
+    }
+  }
+
+  // на планшетах і телефонах — пункти в рядок
+  @include respond-down($bp-tablet) {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    &__user {
+      width: 100%;
+    }
+  }
+}

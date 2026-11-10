@@ -7,7 +7,11 @@ import ScrollManager from './components/ScrollManager';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { footerLinks, mainMenu, socialLinks } from './data/site';
-import AccountPage from './pages/AccountPage';
+import OrderPage from './pages/account/OrderPage';
+import OrdersPage from './pages/account/OrdersPage';
+import PasswordPage from './pages/account/PasswordPage';
+import ProfilePage from './pages/account/ProfilePage';
+import AdminOrderPage from './pages/admin/AdminOrderPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import CartPage from './pages/CartPage';
 import CategoryPage from './pages/CategoryPage';
@@ -43,11 +47,37 @@ export default function App() {
             <Route path="/register" element={<RegisterPage />} />
 
             {/* Клієнт */}
+            <Route path="/account" element={<Navigate to="/account/orders" replace />} />
             <Route
-              path="/account"
+              path="/account/orders"
               element={
                 <RequireAuth role="client">
-                  <AccountPage />
+                  <OrdersPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/account/orders/:number"
+              element={
+                <RequireAuth role="client">
+                  <OrderPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/account/profile"
+              element={
+                <RequireAuth role="client">
+                  <ProfilePage />
+                </RequireAuth>
+              }
+            />
+            {/* пароль змінюють і Клієнт, і Адміністратор (UC-ACC-05) */}
+            <Route
+              path="/account/password"
+              element={
+                <RequireAuth>
+                  <PasswordPage />
                 </RequireAuth>
               }
             />
@@ -59,6 +89,15 @@ export default function App() {
               element={
                 <RequireAuth role="admin">
                   <AdminOrdersPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/admin/orders/:number"
+              element={
+                <RequireAuth role="admin">
+                  <AdminOrderPage />
                 </RequireAuth>
               }
             />

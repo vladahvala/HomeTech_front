@@ -1,0 +1,103 @@
+@use '../abstracts' as *;
+
+// Блок: таблиці кабінету — архів замовлень і позиції замовлення
+.orders-table,
+.order-items {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid $color-border;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th {
+    background-color: $color-bg;
+    font-size: 14px;
+    color: #4b5563;
+  }
+
+  // Телефони: кожен рядок — картка, назва колонки з data-label
+  @include respond-down($bp-phone) {
+    border: none;
+    background: none;
+
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: block;
+      margin-bottom: 12px;
+      border: 1px solid $color-border;
+      border-radius: 10px;
+      background-color: $color-surface;
+    }
+
+    td,
+    tfoot th {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 12px;
+      text-align: right;
+
+      &::before {
+        content: attr(data-label);
+        color: #4b5563;
+        text-align: left;
+      }
+    }
+  }
+}
+
+.orders-table {
+  transition: opacity $transition-base;
+
+  &--loading {
+    opacity: 0.6;
+  }
+
+  &__number {
+    color: $color-primary;
+    font-weight: 700;
+  }
+}
+
+.order-items {
+  tfoot th {
+    text-align: right;
+  }
+
+  &__total {
+    font-size: 18px;
+    font-weight: 700;
+    color: $color-primary;
+  }
+
+  @include respond-down($bp-phone) {
+    tfoot tr {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+    }
+
+    tfoot th,
+    &__total {
+      display: inline;
+      padding: 0;
+      border: none;
+
+      &::before {
+        content: none;
+      }
+    }
+  }
+}

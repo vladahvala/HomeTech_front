@@ -117,3 +117,40 @@ export function addDays(date: string, days: number): string {
   const [year, month, day] = date.split('-').map(Number);
   return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
 }
+
+// ===== Кабінет (UC-ACC-04, UC-ORD-04) =====
+
+export const CANCEL_REASON_MAX = 500;
+
+/** Адреса за замовчуванням необов'язкова, але якщо вказана — 5–200 символів */
+export function validateOptionalAddress(value: string): string | null {
+  return value.trim() ? validateAddress(value) : null;
+}
+
+/** Причина скасування — це примітка до статусу: до 500 символів (таблиця 3.5) */
+export function validateCancelReason(value: string): string | null {
+  if (value.trim().length > CANCEL_REASON_MAX) {
+    return `Причина задовга: максимум ${CANCEL_REASON_MAX} символів.`;
+  }
+  return null;
+}
+
+// ===== Адмінка: замовлення (UC-ADM-ORD-02, 03) =====
+
+export const STATUS_NOTE_MAX = 500;
+export const INTERNAL_NOTE_MAX = 1000;
+
+/** Примітка до статусу: до 500 символів; для скасування — причина від 3 символів (А1) */
+export function validateStatusNote(value: string, isCancel: boolean): string | null {
+  const note = value.trim();
+  if (isCancel && note.length < 3) return 'Для скасування вкажіть причину — щонайменше 3 символи.';
+  if (note.length > STATUS_NOTE_MAX) return `Примітка задовга: максимум ${STATUS_NOTE_MAX} символів.`;
+  return null;
+}
+
+export function validateInternalNote(value: string): string | null {
+  if (value.trim().length > INTERNAL_NOTE_MAX) {
+    return `Службова примітка задовга: максимум ${INTERNAL_NOTE_MAX} символів.`;
+  }
+  return null;
+}

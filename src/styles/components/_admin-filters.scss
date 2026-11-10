@@ -1,0 +1,116 @@
+@use '../abstracts' as *;
+
+// Блок: фільтри списку замовлень магазину (UC-ADM-ORD-01)
+.admin-filters {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  background-color: $color-surface;
+
+  &__statuses {
+    @include flex(row, flex-start, center);
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+    margin: 0 0 12px;
+    padding: 0;
+    border: none;
+  }
+
+  &__legend {
+    float: left;
+    margin: 0 8px 0 0;
+    padding: 6px 0;
+    font-weight: 700;
+  }
+
+  // статус як «таблетка» з галочкою
+  &__chip {
+    @include flex(row, flex-start, center);
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid $color-border;
+    border-radius: 999px;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:has(input:checked) {
+      border-color: $color-primary;
+      background-color: rgba(13, 148, 136, 0.1);
+      font-weight: 700;
+    }
+
+    input {
+      accent-color: $color-primary;
+    }
+  }
+
+  &__fields {
+    display: grid;
+    grid-template-columns: 150px 150px minmax(180px, 1fr) 150px auto;
+    gap: 10px 12px;
+    align-items: end;
+  }
+
+  &__field {
+    @include flex(column);
+    gap: 4px;
+    min-width: 0;
+    margin: 0;
+    font-size: 14px;
+    color: #4b5563;
+
+    input {
+      padding: 7px 10px;
+      border: 1px solid $color-border;
+      border-radius: 6px;
+      font: inherit;
+      color: $color-text-muted;
+    }
+  }
+
+  &__actions {
+    @include flex(row, flex-start, center);
+    gap: 12px;
+
+    .cart-button {
+      padding: 8px 18px;
+    }
+  }
+
+  @include respond-down($bp-laptop) {
+    &__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &__field--wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @include respond-down($bp-phone) {
+    &__fields {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Список замовлень магазину
+.admin-orders {
+  &__count {
+    margin: 0 0 10px;
+    color: #4b5563;
+  }
+
+  &__customer {
+    display: block;
+    font-weight: 700;
+  }
+
+  &__phone,
+  &__qty {
+    font-size: 13px;
+    color: #4b5563;
+  }
+}

@@ -1,6 +1,14 @@
-import type { CartCheckLine, CreateOrderRequest, DeliveryInfo, Order } from '../../types';
+import type {
+  CartCheckLine,
+  CreateOrderRequest,
+  DeliveryInfo,
+  Order,
+  OrderListItem,
+  Page,
+  User,
+} from '../../types';
 import { kyivToday } from '../../utils/dates';
-import { PAYMENTS_BY_DELIVERY } from '../../utils/labels';
+import { canClientCancel, ORDER_STATUS_LABELS, PAYMENTS_BY_DELIVERY } from '../../utils/labels';
 import {
   normalizePhone,
   validateAddress,
@@ -8,35 +16,24 @@ import {
   validateDeliveryDate,
   validateFullName,
   validatePhone,
+  validateCancelReason,
   validatePlace,
 } from '../../validation/rules';
 import { ApiError } from '../ApiError';
 import type { FieldErrors } from '../ApiError';
 import { getMockSessionUser } from '../auth/MockAuthService';
 import { PRODUCTS } from '../mock/catalogData';
+import { loadOrders, nextOrderId, orderNumber, saveOrders, toClientOrder } from '../mock/orderStore';
+import type { StoredOrder } from '../mock/orderStore';
 import type { MockProduct } from '../mock/catalogData';
 import type { OrderService } from './OrderService';
 
 // ТИМЧАСОВО, поки немає бекенду. Замовлення зберігаються в localStorage.
 // Перевірки — ті самі, що має робити бекенд за UC-ORD-01 (кроки 11–13).
 
-const ORDERS_KEY = 'hometech-mock-orders';
 const INTERVALS = ['09-12', '12-15', '15-18', '18-21'];
 
-interface StoredOrder extends Order {
-  userId: number;
-  idempotencyKey: string;
-}
-
 const delay = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms));
-
-function loadOrders(): StoredOrder[] {
-  try {
-    return JSON.parse(localStorage.getItem(ORDERS_KEY) ?? '[]') as StoredOrder[];
-  } catch {
-    return [];
-  }
-}
 
 function toSummary(product: MockProduct) {
   return {
@@ -92,7 +89,7 @@ export class MockOrderService implements OrderService {
     const existing = orders.find(
       (order) => order.idempotencyKey === request.idempotencyKey && order.userId === user.id,
     );
-    if (existing) return existing;
+    if (existing) return toClientOrder(existing);
 
     if (request.items.length === 0 || request.items.length > 50) {
       throw new ApiError(400, 'VALIDATION_ERROR', 'У кошику має бути від 1 до 50 різних товарів.');
@@ -136,10 +133,10 @@ export class MockOrderService implements OrderService {
 
     // кроки 12–13: сума за поточними цінами, номер DT-000001, перший запис історії
     const now = new Date().toISOString();
-    const id = Math.max(0, ...orders.map((order) => order.id)) + 1;
+    const id = nextOrderId(orders);
     const order: StoredOrder = {
       id,
-      number: `DT-${String(id).padStart(6, '0')}`,
+      number: orderNumber(id),
       status: 'new',
       createdAt: now,
       items: lines.map(({ item, product }) => ({
@@ -155,15 +152,90 @@ export class MockOrderService implements OrderService {
       },
       delivery: request.delivery,
       payment: request.payment,
+      paymentStatus: 'unpaid',
       comment: request.comment.trim() || null,
       history: [{ from: null, to: 'new', at: now, by: 'Клієнт', note: null }],
       userId: user.id,
       idempotencyKey: request.idempotencyKey,
+      internalNote: null,
     };
 
-    localStorage.setItem(ORDERS_KEY, JSON.stringify([...orders, order]));
+    saveOrders([...orders, order]);
 
-    const { userId: _userId, idempotencyKey: _key, ...publicOrder } = order;
-    return publicOrder;
+    return toClientOrder(order);
   }
+
+  async listMyOrders(page: number): Promise<Page<OrderListItem>> {
+    await delay(250);
+    const user = requireClient();
+    const mine = loadOrders()
+      .filter((order) => order.userId === user.id)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id);
+
+    const start = (page - 1) * PAGE_SIZE;
+    return {
+      items: mine.slice(start, start + PAGE_SIZE).map((order) => ({
+        number: order.number,
+        createdAt: order.createdAt,
+        itemsCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+        total: order.total,
+        status: order.status,
+      })),
+      total: mine.length,
+      page,
+      pageSize: PAGE_SIZE,
+    };
+  }
+
+  async getMyOrder(number: string): Promise<Order> {
+    await delay(250);
+    return toClientOrder(findMine(requireClient(), number));
+  }
+
+  async cancelMyOrder(number: string, reason: string): Promise<Order> {
+    await delay();
+    const user = requireClient();
+    const order = findMine(user, number);
+
+    if (!canClientCancel(order.status)) {
+      throw new ApiError(
+        409,
+        'STATUS_CHANGED',
+        `Замовлення вже в статусі «${ORDER_STATUS_LABELS[order.status]}» — скасувати його може лише магазин.`,
+      );
+    }
+    const reasonError = validateCancelReason(reason);
+    if (reasonError) {
+      throw new ApiError(400, 'VALIDATION_ERROR', reasonError, { reason: reasonError });
+    }
+
+    const cancelled: StoredOrder = {
+      ...order,
+      status: 'cancelled',
+      history: [
+        ...order.history,
+        { from: order.status, to: 'cancelled', at: new Date().toISOString(), by: 'Клієнт', note: reason.trim() || null },
+      ],
+    };
+    saveOrders(loadOrders().map((item) => (item.id === order.id ? cancelled : item)));
+    return toClientOrder(cancelled);
+  }
+}
+
+const PAGE_SIZE = 20;
+
+function requireClient(): User {
+  const user = getMockSessionUser();
+  if (!user) throw new ApiError(401, 'UNAUTHORIZED', 'Сесія завершилась. Увійдіть знову.');
+  if (user.role !== 'client') throw new ApiError(403, 'FORBIDDEN', 'Ця сторінка доступна клієнтам.');
+  return user;
+}
+
+/** Чуже замовлення — та сама відповідь, що й неіснуюче (SEC-05) */
+function findMine(user: User, number: string): StoredOrder {
+  const order = loadOrders().find((item) => item.number === number && item.userId === user.id);
+  if (!order) {
+    throw new ApiError(404, 'NOT_FOUND', 'Замовлення не знайдено. Перевірте номер або відкрийте список своїх замовлень.');
+  }
+  return order;
 }

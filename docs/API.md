@@ -152,6 +152,80 @@ ProductDetails = ProductSummary & {
 
 До `User` додано `deliveryAddress: string | null` — адреса за замовчуванням, яку фронт підставляє в оформлення (UC-ACC-04).
 
+## Кабінет клієнта (UC-ORD-02…04, UC-ACC-04, 05)
+
+| Запит | Тіло | Відповідь | Помилки |
+|---|---|---|---|
+| `GET /api/orders/my?page=1` | — | `Page<OrderListItem>` від нових до старих, по 20 | `401` |
+| `GET /api/orders/my/:number` | — | `Order` | `404 NOT_FOUND` — і для неіснуючого, і для **чужого** замовлення (SEC-05) |
+| `POST /api/orders/my/:number/cancel` | `{ reason: string }` (до 500 символів, може бути порожнім) | `Order` зі статусом `cancelled` | `409 STATUS_CHANGED` — статус уже не «Нове»/«В обробці» (REL-03); `400 VALIDATION_ERROR` |
+| `PATCH /api/account/profile` | `{ fullName, phone, deliveryAddress: string \| null }` | `User` | `400 VALIDATION_ERROR` з `fields` |
+| `POST /api/account/password` | `{ currentPassword, newPassword }` | `204` | `400 WRONG_PASSWORD` з `fields.currentPassword`; `400 VALIDATION_ERROR` з `fields.newPassword` |
+
+```ts
+OrderListItem { number, createdAt, itemsCount /* сума кількостей */, total, status }
+```
+
+- До `Order` додано `paymentStatus: 'unpaid' | 'paid'` — нове замовлення `unpaid`, змінює Адміністратор (UC-ADM-ORD-03), Клієнт бачить.
+- Скасування Клієнтом додає в історію `{ from, to: 'cancelled', by: 'Клієнт', note: reason || null }`.
+- Профіль: email Клієнт не змінює (це UC-ADM-CLI-03); `deliveryAddress` — порожній рядок означає «немає» (`null`).
+- Зміна пароля доступна Клієнту й Адміністратору; після неї сервер завершує **інші** сесії користувача, поточна лишається (UC-ACC-05).
+
+## Адмінка: замовлення (UC-ADM-ORD-01…03)
+
+Усі запити — лише для ролі `admin`: без сесії `401 UNAUTHORIZED`, Клієнту `403 FORBIDDEN` (SEC-03). Роль перевіряється на кожному запиті, не лише на фронті.
+
+| Запит | Тіло | Відповідь | Помилки |
+|---|---|---|---|
+| `GET /api/admin/orders?status=new&status=processing&from=2026-11-01&to=2026-11-10&customer=коваль&number=DT-00&page=1` | — | `Page<AdminOrderListItem>` від нових до старих, по 20 | `401`, `403` |
+| `GET /api/admin/orders/:number` | — | `AdminOrder` | `404 NOT_FOUND` |
+| `POST /api/admin/orders/:number/status` | `{ expectedStatus, status, note }` | `AdminOrder` | `409 STATUS_CHANGED`, `409 TRANSITION_NOT_ALLOWED`, `400 VALIDATION_ERROR` з `fields.note` |
+| `PATCH /api/admin/orders/:number` | `{ paymentStatus: 'unpaid' \| 'paid', internalNote }` | `AdminOrder` | `400 VALIDATION_ERROR` з `fields.internalNote` |
+
+Параметри списку (усі необов'язкові):
+- `status` — можна повторювати кілька разів; немає — усі статуси;
+- `from`, `to` — `YYYY-MM-DD`, включно, дата оформлення **за київським часом**;
+- `customer` — підрядок у ПІБ, email чи телефоні Клієнта (або ПІБ отримувача), без урахування регістру;
+- `number` — підрядок номера (`DT-00001` знайде `DT-000010…19`).
+
+```ts
+OrderCustomer { id, fullName, email, phone }
+AdminOrderListItem extends OrderListItem { customer: OrderCustomer, paymentStatus, delivery: 'pickup' | 'courier' | 'nova_poshta' }
+AdminOrder extends Order {
+  customer: OrderCustomer,
+  internalNote: string | null,      // бачить лише Адміністратор
+  allowedTransitions: OrderStatus[] // куди можна перевести зараз; [] для кінцевих
+}
+```
+
+### Зміна статусу
+
+- `expectedStatus` — статус, який Адміністратор бачив на екрані. Якщо зараз інший (хтось змінив раніше, Клієнт скасував) — `409 STATUS_CHANGED`, нічого не змінюється (REL-03). Фронт показує повідомлення й перезавантажує замовлення.
+- Перехід перевіряється за таблицею 3.3 (FUN-02); недозволений — `409 TRANSITION_NOT_ALLOWED`:
+
+| Із | До | Хто | Умова |
+|---|---|---|---|
+| Нове | В обробці | Адміністратор | — |
+| Нове | Скасоване | Клієнт, Адміністратор | — |
+| В обробці | Зібране | Адміністратор | — |
+| В обробці | Скасоване | Клієнт, Адміністратор | — |
+| Зібране | Відправлене | Адміністратор | кур'єр або Нова пошта |
+| Зібране | Поставлене | Адміністратор | самовивіз |
+| Відправлене | Поставлене | Адміністратор | — |
+
+- `note` — до 500 символів; для скасування обов'язкова, мінімум 3 символи (причина).
+- Новий статус і запис історії `{ from, to, at, by: <ПІБ адміністратора>, note: note || null }` зберігаються в одній транзакції (FUN-05).
+- Ту саму таблицю фронт має в `src/utils/orderTransitions.ts`, але покладається на `allowedTransitions` із відповіді.
+
+### Оплата й службова примітка
+
+- `paymentStatus` — Адміністратор відмічає оплату вручну (рахунок, оплата при отриманні); Клієнт бачить статус оплати у своєму замовленні.
+- `internalNote` — до 1000 символів, порожній рядок означає `null`. Клієнту **не** віддається.
+
+### Що бачить Клієнт
+
+У відповідях `/api/orders/my…` історія містить статуси, дати й примітки, але не те, хто саме з персоналу змінив статус (FUN-05). Фронт клієнта поле `by` не показує; бекенд може його не віддавати або віддавати узагальнено («Магазин» / «Клієнт»).
+
 ## Далі
 
-Кабінет клієнта (мої замовлення, скасування, профіль, пароль) і адмінка — опишемо тут у тому ж форматі.
+Адмінка: товари, категорії з шаблонами характеристик, виробники (UC-ADM-CAT-*), клієнти та імпорт із Катрану — опишемо тут, коли до них дійдемо.

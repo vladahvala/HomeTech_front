@@ -17,7 +17,7 @@ export default function OrderSuccessPage() {
       <main className="checkout-page">
         <Notice kind="success" title="Замовлення оформлено">
           Номер і деталі замовлення — в особистому кабінеті.{' '}
-          <Link to="/account">Перейти до кабінету</Link>
+          <Link to="/account/orders">Мої замовлення</Link>
         </Notice>
       </main>
     );
@@ -32,7 +32,10 @@ export default function OrderSuccessPage() {
           {order.recipient.phone}.
         </p>
         <div className="notice__actions">
-          <Link className="cart-button" to="/account">
+          <Link className="cart-button" to={`/account/orders/${order.number}`}>
+            Переглянути замовлення
+          </Link>
+          <Link className="notice__link" to="/account/orders">
             Мої замовлення
           </Link>
           <Link className="notice__link" to="/#catalog">

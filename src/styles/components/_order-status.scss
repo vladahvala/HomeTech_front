@@ -1,0 +1,41 @@
+@use '../abstracts' as *;
+
+// Блок: статус замовлення (таблиця 3.3)
+.order-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--new {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+
+  &--processing {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &--assembled {
+    background-color: #ede9fe;
+    color: #5b21b6;
+  }
+
+  &--shipped {
+    background-color: #cffafe;
+    color: #155e75;
+  }
+
+  &--delivered {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  &--cancelled {
+    background-color: #f3f4f6;
+    color: #4b5563;
+  }
+}

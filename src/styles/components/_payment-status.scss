@@ -1,0 +1,21 @@
+@use '../abstracts' as *;
+
+// Блок: статус оплати
+.payment-status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--paid {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  &--unpaid {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+}

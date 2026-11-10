@@ -1,0 +1,143 @@
+@use '../abstracts' as *;
+
+// Блок: перегляд замовлення в кабінеті (UC-ORD-03)
+.order-view {
+  &__header {
+    @include flex(row, flex-start, center);
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__date {
+    color: #4b5563;
+  }
+
+  &__facts {
+    max-width: 760px;
+  }
+
+  &__section {
+    margin-top: 28px;
+  }
+
+  &__subtitle {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  &__cancel {
+    margin-top: 28px;
+    padding: 10px 20px;
+    border: 2px solid $color-danger;
+    border-radius: 6px;
+    background: none;
+    color: $color-danger;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-danger;
+      color: $color-white;
+    }
+  }
+
+  &__cancel-note {
+    margin-top: 28px;
+    color: #4b5563;
+  }
+}
+
+// Блок: історія статусів
+.history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-left: 3px solid $color-border;
+
+  &__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr) auto;
+    gap: 4px 16px;
+    padding: 8px 0 8px 18px;
+
+    // точка на лінії часу
+    &::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: -8px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background-color: $color-primary;
+    }
+  }
+
+  &__date {
+    color: #4b5563;
+    font-size: 14px;
+  }
+
+  &__by {
+    color: #4b5563;
+    font-size: 14px;
+  }
+
+  &__note {
+    grid-column: 2 / 4;
+    font-style: italic;
+  }
+
+  @include respond-down($bp-phone) {
+    &__item {
+      grid-template-columns: 1fr;
+    }
+
+    &__note {
+      grid-column: auto;
+    }
+  }
+}
+
+// Блок: підтвердження скасування
+.cancel-form {
+  max-width: 520px;
+  margin-top: 28px;
+  padding: 16px;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  background-color: #fef2f2;
+
+  &__question {
+    margin: 0 0 12px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  &__actions {
+    @include flex(row, flex-start, center);
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  &__confirm {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: $color-danger;
+    color: $color-white;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+  }
+}

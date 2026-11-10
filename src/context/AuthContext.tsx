@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../api';
-import type { LoginData, RegisterData, User } from '../types';
+import type { LoginData, PasswordChangeData, ProfileData, RegisterData, User } from '../types';
 
 interface AuthContextValue {
   /** null — гість */
@@ -13,6 +13,10 @@ interface AuthContextValue {
   logout: () => Promise<void>;
   /** Сервер сказав, що сесії вже немає (401) — забуваємо користувача без запиту (А9) */
   forgetUser: () => void;
+  /** UC-ACC-04: зберігає профіль і одразу оновлює дані в шапці й оформленні */
+  updateProfile: (data: ProfileData) => Promise<User>;
+  /** UC-ACC-05 */
+  changePassword: (data: PasswordChangeData) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -61,9 +65,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const forgetUser = useCallback(() => setUser(null), []);
 
+  const updateProfile = useCallback(async (data: ProfileData) => {
+    const updated = await authService.updateProfile(data);
+    setUser(updated);
+    return updated;
+  }, []);
+
+  const changePassword = useCallback(
+    (data: PasswordChangeData) => authService.changePassword(data),
+    [],
+  );
+
   const value = useMemo(
-    () => ({ user, status, login, register, logout, forgetUser }),
-    [user, status, login, register, logout, forgetUser],
+    () => ({ user, status, login, register, logout, forgetUser, updateProfile, changePassword }),
+    [user, status, login, register, logout, forgetUser, updateProfile, changePassword],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
