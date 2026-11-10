@@ -9,11 +9,13 @@ import type {
   Manufacturer,
   ProductSummary,
 } from '../../types';
+import { kyivToday } from '../../utils/dates';
+import { isPromoActive } from '../../utils/promo';
 import { ApiError } from '../ApiError';
 import { CATEGORIES, CHARACTERISTICS, MANUFACTURERS, PRODUCTS } from './catalogData';
 
-// v2: шаблони імпорту стали регулярними виразами — старі демо-дані скидаються
-const CATALOG_KEY = 'hometech-mock-catalog-v2';
+// v3: з'явилися акції — старі демо-дані скидаються, щоб були демо-акції
+const CATALOG_KEY = 'hometech-mock-catalog-v3';
 
 export interface StoredCategory extends Category {
   hidden: boolean;
@@ -54,6 +56,9 @@ export interface StoredProduct {
   ownImageUrl: string | null;
   supplierImageUrl: string | null;
   values: Record<number, CharacteristicValue>;
+  /** Акційна ціна й останній день акції (імпорт їх не змінює) */
+  promoPrice: number | null;
+  promoUntil: string | null;
 }
 
 export interface CatalogState {
@@ -115,11 +120,24 @@ export function productImage(product: StoredProduct): string | null {
   return product.ownImageUrl ?? product.supplierImageUrl;
 }
 
+/** Акція діє сьогодні */
+export function hasActivePromo(product: StoredProduct): boolean {
+  return isPromoActive(product.price, product.promoPrice ?? null, product.promoUntil ?? null, kyivToday());
+}
+
+/** Ціна, за якою товар продається зараз: під час акції — акційна */
+export function effectivePrice(product: StoredProduct): number {
+  return hasActivePromo(product) ? product.promoPrice! : (product.price ?? 0);
+}
+
 export function toProductSummary(product: StoredProduct): ProductSummary {
+  const promo = hasActivePromo(product);
   return {
     id: product.id,
     name: product.name,
-    price: product.price ?? 0,
+    price: effectivePrice(product),
+    oldPrice: promo ? product.price : null,
+    promoUntil: promo ? (product.promoUntil ?? null) : null,
     availability: product.availability,
     imageUrl: productImage(product),
   };
@@ -172,8 +190,29 @@ function seedCatalog(): CatalogState {
       ownImageUrl: null,
       supplierImageUrl: product.imageUrl,
       values: { ...product.values },
+      promoPrice: null,
+      promoUntil: null,
     };
   });
+
+  // демо-акції: знижка й (не завжди) дата закінчення від дня першого запуску
+  const day = 24 * 60 * 60 * 1000;
+  const dateIn = (days: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Kyiv' }).format(new Date(Date.now() + days * day));
+  const PROMOS: [id: number, discount: number, untilInDays: number | null][] = [
+    [1, 0.15, 14], // холодильник Samsung
+    [12, 0.2, 7], // чайник Xiaomi
+    [31, 0.12, null], // мікрохвильова піч Samsung — без кінцевої дати
+    [40, 0.25, 10], // витяжка Gorenje
+    [45, 0.1, 21], // пилосос Samsung (очікується)
+    [10, 0.18, null], // чайник Philips
+    [3, 0.3, -1], // акція, що вже закінчилась, — у каталозі не показується
+  ];
+  for (const [id, discount, until] of PROMOS) {
+    const product = products.find((item) => item.id === id);
+    if (!product?.price) continue;
+    product.promoPrice = Math.round(product.price * (1 - discount));
+    product.promoUntil = until === null ? null : dateIn(until);
+  }
 
   // кілька товарів, які чекають на Адміністратора: щойно імпортовані приховані й без категорії
   const now = Date.now();
@@ -183,25 +222,26 @@ function seedCatalog(): CatalogState {
       categoryId: 3, manufacturerId: 7, name: 'Електрочайник Tefal KO2501 1,7 л', price: 1649, purchasePrice: 1290,
       availability: 'in_stock', article: 'KO2501', warrantyMonths: 12, assemblyCountry: null, assemblyCity: null,
       description: '', createdAt: hoursAgo(5), updatedAt: hoursAgo(5), published: false, deleted: false,
-      supplierCode: 'KT-20117', ownImageUrl: null, supplierImageUrl: null, values: {},
+      supplierCode: 'KT-20117', ownImageUrl: null, supplierImageUrl: null, values: {}, promoPrice: null, promoUntil: null,
     },
     {
       categoryId: 1, manufacturerId: 4, name: 'Холодильник Gorenje NRK6192AW4 302 л', price: 18999, purchasePrice: 15400,
       availability: 'expected', article: 'NRK6192AW4', warrantyMonths: 24, assemblyCountry: null, assemblyCity: null,
       description: '', createdAt: hoursAgo(5), updatedAt: hoursAgo(5), published: false, deleted: false,
-      supplierCode: 'KT-20118', ownImageUrl: null, supplierImageUrl: null, values: {},
+      supplierCode: 'KT-20118', ownImageUrl: null, supplierImageUrl: null, values: {}, promoPrice: null, promoUntil: null,
     },
     {
       categoryId: null, manufacturerId: 6, name: 'Блендер Philips HR2602/90', price: 1899, purchasePrice: null,
       availability: 'in_stock', article: 'HR2602/90', warrantyMonths: 24, assemblyCountry: 'Китай', assemblyCity: null,
       description: 'Стаціонарний блендер, чаша 1 л.', createdAt: hoursAgo(26), updatedAt: hoursAgo(26),
       published: false, deleted: false, supplierCode: null, ownImageUrl: null, supplierImageUrl: null, values: {},
+      promoPrice: null, promoUntil: null,
     },
     {
       categoryId: null, manufacturerId: null, name: 'Мультиварка (уточнити модель)', price: null, purchasePrice: null,
       availability: 'expected', article: null, warrantyMonths: null, assemblyCountry: null, assemblyCity: null,
       description: '', createdAt: hoursAgo(30), updatedAt: hoursAgo(30), published: false, deleted: false,
-      supplierCode: null, ownImageUrl: null, supplierImageUrl: null, values: {},
+      supplierCode: null, ownImageUrl: null, supplierImageUrl: null, values: {}, promoPrice: null, promoUntil: null,
     },
   ];
   for (const item of extra) products.push({ ...item, id: nextId(products) });

@@ -25,7 +25,7 @@ export const mainMenu: NavLink[] = [
   { href: '/#contacts', label: 'Контакти' },
 ];
 
-export const footerLinks: NavLink[] = mainMenu.slice(1);
+export const footerLinks: NavLink[] = [{ href: '/promotions', label: 'Акції' }, ...mainMenu.slice(1)];
 
 export const socialLinks: SocialLink[] = [
   { label: 'Facebook', href: '#', icon: 'ri-facebook-fill' },

@@ -101,6 +101,37 @@
     }
   }
 
+  // Заголовок каруселі акцій — на темній плашці, щоб текст читався на будь-якому фоні
+  &__header {
+    @include flex(row, space-between, center);
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    max-width: 1000px;
+    margin: 10px auto 0;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background-color: rgba(17, 24, 39, 0.72);
+    color: $color-white;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  &__all {
+    color: $color-white;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &:hover,
+    &:focus-visible {
+      color: $color-focus;
+    }
+  }
+
   // Стрілки
   &__controls {
     @include flex(row, space-between);
@@ -246,7 +277,11 @@
     padding: 24px 12px;
 
     &__track {
-      height: 280px;
+      height: 340px;
+    }
+
+    &__title {
+      font-size: 18px;
     }
 
     &__item {
@@ -261,8 +296,8 @@
 
       &--pos-3 {
         left: 50%;
-        width: min(220px, 72vw);
-        height: 230px;
+        width: min(230px, 66vw);
+        height: 310px;
 
         opacity: 1;
         z-index: 2;
@@ -291,5 +326,74 @@
       height: 8px;
       margin: 0 8px;
     }
+  }
+}
+
+// Блок: слайд акції — фото, назва, ціни; бічні слайди показують лише фото
+.promo-slide {
+  @include flex(column);
+  overflow: hidden;
+  background-color: $color-surface;
+  color: $color-text-muted;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid $color-focus;
+    outline-offset: 3px;
+  }
+
+  &__image {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    object-fit: contain;
+    background-color: $color-surface;
+  }
+
+  &__body {
+    @include flex(column);
+    flex-shrink: 0;
+    gap: 2px;
+    padding: 8px 12px 12px;
+    // текст видно лише на центральному слайді
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+    transition:
+      max-height $transition-base,
+      opacity $transition-base,
+      padding $transition-base;
+  }
+
+  &.slider__item--pos-3 &__body {
+    max-height: 160px;
+    padding-top: 8px;
+    padding-bottom: 12px;
+    opacity: 1;
+  }
+
+  &__name {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  &__price {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  &__until {
+    font-size: 13px;
+    color: $color-gray;
   }
 }

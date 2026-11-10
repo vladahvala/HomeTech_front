@@ -14,6 +14,7 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import type { AdminCategory, AdminManufacturer, AdminProductListItem, AdminProductQuery, Availability, ProductSource } from '../../types';
 import { parseAdminProductQuery, toAdminProductParams } from '../../utils/adminProductQuery';
 import { categoryLabel, categoryTree } from '../../utils/categoryTree';
+import { formatDate } from '../../utils/dates';
 import { formatPrice } from '../../utils/format';
 import { AVAILABILITY_LABELS, SOURCE_LABELS } from '../../utils/labels';
 
@@ -88,7 +89,8 @@ export default function AdminProductsPage() {
     query.manufacturer !== undefined ||
     query.published !== undefined ||
     !!query.availability ||
-    !!query.source;
+    !!query.source ||
+    query.promo !== undefined;
 
   const { data, error, isLoading, reload } = list;
   const totalPages = data ? Math.ceil(data.total / data.pageSize) : 0;
@@ -156,6 +158,12 @@ export default function AdminProductsPage() {
                     formatPrice(product.price)
                   ) : (
                     <span className="admin-products__missing">немає ціни</span>
+                  )}
+                  {product.promoPrice !== null && (
+                    <span className="admin-products__promo">
+                      акція {formatPrice(product.promoPrice)}
+                      {product.promoUntil ? ` до ${formatDate(product.promoUntil)}` : ''}
+                    </span>
                   )}
                   {product.purchasePrice !== null && (
                     <span className="admin-products__meta">закуп. {formatPrice(product.purchasePrice)}</span>
@@ -344,6 +352,17 @@ function ProductFilters({ query, categories, manufacturers, onApply }: ProductFi
                 {SOURCE_LABELS[value]}
               </option>
             ))}
+          </select>
+        </label>
+        <label className="admin-filters__field">
+          <span>Акція</span>
+          <select
+            value={query.promo === undefined ? '' : String(query.promo)}
+            onChange={(event) => apply({ promo: event.target.value === '' ? undefined : event.target.value === 'true' })}
+          >
+            <option value="">Усі</option>
+            <option value="true">Діє акція</option>
+            <option value="false">Без акції</option>
           </select>
         </label>
         <div className="admin-filters__actions">

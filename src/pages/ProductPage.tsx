@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { catalogService } from '../api';
 import { ApiError } from '../api/ApiError';
 import AvailabilityBadge from '../components/AvailabilityBadge';
+import PriceTag from '../components/PriceTag';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ListState from '../components/ListState';
 import ProductGallery from '../components/ProductGallery';
@@ -15,6 +16,7 @@ import { useCanShop } from '../hooks/useCanShop';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useTemporaryValue } from '../hooks/useTemporaryValue';
 import type { ProductDetails } from '../types';
+import { formatDate } from '../utils/dates';
 import { formatPrice } from '../utils/format';
 import { canOrder, formatWarranty } from '../utils/labels';
 import NotFoundPage from './NotFoundPage';
@@ -84,9 +86,16 @@ function ProductDetailsView({ product }: { product: ProductDetails }) {
           <h2 className="product-page__title">{product.name}</h2>
 
           <div className="product-page__prices">
-            <span className="product-page__price">{formatPrice(product.price)}</span>
+            <PriceTag className="product-page__price" price={product.price} oldPrice={product.oldPrice} />
             <AvailabilityBadge availability={product.availability} />
           </div>
+          {!!product.oldPrice && (
+            <p className="product-page__promo">
+              {product.promoUntil
+                ? `Акційна ціна діє до ${formatDate(product.promoUntil)} включно.`
+                : 'Акційна ціна — поки діє пропозиція.'}
+            </p>
+          )}
 
           {!canShop ? (
             <p className="product-page__admin-note">

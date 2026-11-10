@@ -57,6 +57,7 @@ export default function CatalogFilters({ filters, query, onChange }: CatalogFilt
       priceMin: undefined,
       priceMax: undefined,
       inStockOnly: false,
+      promoOnly: false,
       characteristics: {},
     });
 
@@ -76,6 +77,14 @@ export default function CatalogFilters({ filters, query, onChange }: CatalogFilt
             onChange={(event) => onChange({ inStockOnly: event.target.checked })}
           />
           Лише в наявності
+        </label>
+        <label className="filters__option filters__option--stock">
+          <input
+            type="checkbox"
+            checked={!!query.promoOnly}
+            onChange={(event) => onChange({ promoOnly: event.target.checked })}
+          />
+          Лише акційні
         </label>
 
         <form className="filters__group" onSubmit={applyPrice} noValidate>

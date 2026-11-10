@@ -8,7 +8,6 @@ import Pager from '../components/Pager';
 import ProductResults from '../components/ProductResults';
 import Slider from '../components/Slider';
 import { advantages } from '../data/site';
-import { slides } from '../data/slides';
 import { useAsync } from '../hooks/useAsync';
 import { useCatalogQuery } from '../hooks/useCatalogQuery';
 import { useCategories } from '../hooks/useCategories';
@@ -20,6 +19,8 @@ export default function HomePage() {
   const { query, updateFilters } = useCatalogQuery();
   const queryKey = toSearchParams(query).toString();
   const products = useAsync(() => catalogService.getProducts(query), [queryKey]);
+  // карусель — лише для акцій; поки їх немає (або не завантажились), її не показуємо
+  const promotions = useAsync(() => catalogService.getPromotions(), []);
 
   const totalPages = products.data ? Math.ceil(products.data.total / products.data.pageSize) : 0;
   const hrefFor = (page: number) =>
@@ -27,7 +28,7 @@ export default function HomePage() {
 
   return (
     <div className="page">
-      <Slider slides={slides} />
+      {promotions.data && promotions.data.length > 0 && <Slider products={promotions.data} />}
 
       <div className="catalog" id="catalog">
         <div className="catalog__sidebar">

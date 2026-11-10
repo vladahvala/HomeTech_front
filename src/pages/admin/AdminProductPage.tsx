@@ -20,7 +20,9 @@ import type {
   ProductInput,
 } from '../../types';
 import { categoryLabel, categoryTree } from '../../utils/categoryTree';
+import { formatDate, kyivToday } from '../../utils/dates';
 import { formatPrice } from '../../utils/format';
+import { discountPercent, isPromoActive } from '../../utils/promo';
 import { AVAILABILITY_LABELS } from '../../utils/labels';
 import {
   DESCRIPTION_MAX,
@@ -172,6 +174,8 @@ interface FormState {
   assemblyCountry: string;
   assemblyCity: string;
   values: Record<number, string>;
+  promoPrice: string;
+  promoUntil: string;
 }
 
 const numberText = (value: number) => String(value).replace('.', ',');
@@ -197,6 +201,8 @@ function initialState(product: AdminProduct | null): FormState {
     assemblyCountry: product?.assemblyCountry ?? '',
     assemblyCity: product?.assemblyCity ?? '',
     values: product ? valuesToText(product.values) : {},
+    promoPrice: product?.promoPrice !== null && product?.promoPrice !== undefined ? numberText(product.promoPrice) : '',
+    promoUntil: product?.promoUntil ?? '',
   };
 }
 
@@ -223,6 +229,8 @@ function toInput(form: FormState, template: Characteristic[]): ProductInput {
     assemblyCountry: form.assemblyCountry,
     assemblyCity: form.assemblyCity,
     values,
+    promoPrice: parseDecimal(form.promoPrice),
+    promoUntil: form.promoUntil || null,
   };
 }
 
@@ -290,7 +298,7 @@ function ProductForm({ product, categories, manufacturers, onSaved, onError }: P
     event.preventDefault();
     if (template.isLoading) return;
     const input = toInput(form, characteristics);
-    const found = validateProductInput(input, characteristics);
+    const found = validateProductInput(input, characteristics, kyivToday());
     if (Object.keys(found).length > 0) {
       setErrors(found);
       return;
@@ -451,6 +459,18 @@ function ProductForm({ product, categories, manufacturers, onSaved, onError }: P
         </div>
       </div>
 
+      <PromoFields
+        price={parseDecimal(form.price)}
+        promoPrice={form.promoPrice}
+        promoUntil={form.promoUntil}
+        errors={errors}
+        onChange={(field, value) => update(field, value)}
+        onClear={() => {
+          update('promoPrice', '');
+          update('promoUntil', '');
+        }}
+      />
+
       <fieldset className="admin-edit__specs">
         <legend className="admin-edit__legend">Характеристики</legend>
         {losesValues && (
@@ -494,6 +514,91 @@ function ProductForm({ product, categories, manufacturers, onSaved, onError }: P
         {isSaving ? 'Зберігаємо…' : product ? 'Зберегти зміни' : 'Створити товар'}
       </button>
     </form>
+  );
+}
+
+interface PromoFieldsProps {
+  price: number | null;
+  promoPrice: string;
+  promoUntil: string;
+  errors: FieldErrors;
+  onChange: (field: 'promoPrice' | 'promoUntil', value: string) => void;
+  onClear: () => void;
+}
+
+/** Акційна ціна й дата закінчення; товар з діючою акцією потрапляє в карусель на головній */
+function PromoFields({ price, promoPrice, promoUntil, errors, onChange, onClear }: PromoFieldsProps) {
+  const today = kyivToday();
+  const parsed = parseDecimal(promoPrice);
+  const promo = parsed !== null && Number.isFinite(parsed) ? parsed : null;
+  const active = isPromoActive(price, promo, promoUntil || null, today);
+
+  let status: string;
+  if (promo === null) status = 'Акції немає. Вкажіть акційну ціну — товар з’явиться в каруселі акцій на головній.';
+  else if (active && price !== null) {
+    status = `Діє: −${discountPercent(price, promo)}%${promoUntil ? `, до ${formatDate(promoUntil)} включно` : ', без кінцевої дати'}. Покупці бачать стару ціну закресленою.`;
+  } else if (promoUntil && promoUntil < today) status = `Акція закінчилась ${formatDate(promoUntil)} — покупці бачать звичайну ціну.`;
+  else status = 'Акція не діє: акційна ціна має бути меншою за звичайну.';
+
+  return (
+    <fieldset className="admin-edit__promo">
+      <legend className="admin-edit__legend">Акція</legend>
+      <p className={`admin-panel__text admin-edit__promo-status${active ? ' admin-edit__promo-status--active' : ''}`}>
+        {status}
+      </p>
+      <div className="admin-edit__grid">
+        <div className="form-field">
+          <label className="form-field__label" htmlFor="product-promoPrice">
+            Акційна ціна, грн
+          </label>
+          <input
+            id="product-promoPrice"
+            className={`form-field__input${errors.promoPrice ? ' form-field__input--invalid' : ''}`}
+            inputMode="decimal"
+            value={promoPrice}
+            aria-invalid={errors.promoPrice ? true : undefined}
+            aria-describedby={errors.promoPrice ? 'product-promoPrice-error' : 'product-promoPrice-hint'}
+            onChange={(event) => onChange('promoPrice', event.target.value)}
+          />
+          {errors.promoPrice && (
+            <p id="product-promoPrice-error" className="form-field__error">
+              {errors.promoPrice}
+            </p>
+          )}
+          <p id="product-promoPrice-hint" className="form-field__hint">
+            Менша за звичайну ціну
+          </p>
+        </div>
+        <div className="form-field">
+          <label className="form-field__label" htmlFor="product-promoUntil">
+            Діє до (включно)
+          </label>
+          <input
+            id="product-promoUntil"
+            type="date"
+            min={today}
+            className={`form-field__input${errors.promoUntil ? ' form-field__input--invalid' : ''}`}
+            value={promoUntil}
+            aria-invalid={errors.promoUntil ? true : undefined}
+            aria-describedby={errors.promoUntil ? 'product-promoUntil-error' : 'product-promoUntil-hint'}
+            onChange={(event) => onChange('promoUntil', event.target.value)}
+          />
+          {errors.promoUntil && (
+            <p id="product-promoUntil-error" className="form-field__error">
+              {errors.promoUntil}
+            </p>
+          )}
+          <p id="product-promoUntil-hint" className="form-field__hint">
+            Порожньо — поки не приберете акцію
+          </p>
+        </div>
+      </div>
+      {(promoPrice || promoUntil) && (
+        <button type="button" className="link-button link-button--danger admin-edit__promo-clear" onClick={onClear}>
+          Прибрати акцію
+        </button>
+      )}
+    </fieldset>
   );
 }
 

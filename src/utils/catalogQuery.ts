@@ -46,6 +46,7 @@ export function parseQuery(search: string, category?: string): ProductQuery {
   query.priceMin = toPositiveNumber(params.get('pmin'));
   query.priceMax = toPositiveNumber(params.get('pmax'));
   query.inStockOnly = params.get('stock') === '1';
+  if (params.get('promo') === '1') query.promoOnly = true;
 
   for (const key of new Set(params.keys())) {
     const id = Number(key.slice(CHARACTERISTIC_PREFIX.length));
@@ -69,6 +70,7 @@ export function toSearchParams(query: ProductQuery, includeCategory = false): UR
   if (query.priceMin !== undefined) params.set('pmin', String(query.priceMin));
   if (query.priceMax !== undefined) params.set('pmax', String(query.priceMax));
   if (query.inStockOnly) params.set('stock', '1');
+  if (query.promoOnly) params.set('promo', '1');
 
   for (const [id, values] of Object.entries(query.characteristics)) {
     for (const value of values) params.append(`${CHARACTERISTIC_PREFIX}${id}`, value);
@@ -84,6 +86,7 @@ export function hasActiveFilters(query: ProductQuery): boolean {
     query.priceMin !== undefined ||
     query.priceMax !== undefined ||
     query.inStockOnly ||
+    !!query.promoOnly ||
     Object.values(query.characteristics).some((values) => values.length > 0)
   );
 }

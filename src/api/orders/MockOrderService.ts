@@ -22,7 +22,7 @@ import {
 import { ApiError } from '../ApiError';
 import type { FieldErrors } from '../ApiError';
 import { getMockSessionUser } from '../auth/MockAuthService';
-import { isProductVisible, loadCatalog, toProductSummary } from '../mock/catalogStore';
+import { effectivePrice, isProductVisible, loadCatalog, toProductSummary } from '../mock/catalogStore';
 import { loadOrders, nextOrderId, orderNumber, saveOrders, toClientOrder } from '../mock/orderStore';
 import type { StoredOrder } from '../mock/orderStore';
 import type { OrderService } from './OrderService';
@@ -117,7 +117,8 @@ export class MockOrderService implements OrderService {
     }));
     const changed = lines.some(
       ({ item, product }) =>
-        !product || product.availability === 'out_of_stock' || product.price !== item.price,
+        // ціна змінилась (зокрема почалась чи закінчилась акція) — Клієнт має побачити нову
+        !product || product.availability === 'out_of_stock' || effectivePrice(product) !== item.price,
     );
     if (changed) {
       throw new ApiError(
@@ -128,8 +129,8 @@ export class MockOrderService implements OrderService {
     }
 
     // кроки 12–13: сума за поточними цінами, номер DT-000001, перший запис історії.
-    // Видимий товар завжди має ціну (isProductVisible), тож ?? 0 — лише для типів.
-    const priced = lines.map(({ item, product }) => ({ item, name: product!.name, price: product!.price ?? 0 }));
+    // під час акції фіксуємо акційну ціну (FUN-04)
+    const priced = lines.map(({ item, product }) => ({ item, name: product!.name, price: effectivePrice(product!) }));
     const now = new Date().toISOString();
     const id = nextOrderId(orders);
     const order: StoredOrder = {

@@ -10,9 +10,16 @@ import type {
 } from '../../types';
 import { formatCharacteristicValue } from '../../utils/labels';
 import { ApiError } from '../ApiError';
-import { isCategoryVisible, isProductVisible, loadCatalog, toProductSummary } from '../mock/catalogStore';
+import {
+  effectivePrice,
+  hasActivePromo,
+  isCategoryVisible,
+  isProductVisible,
+  loadCatalog,
+  toProductSummary,
+} from '../mock/catalogStore';
 import type { CatalogState, StoredProduct } from '../mock/catalogStore';
-import { PAGE_SIZE } from './CatalogService';
+import { PAGE_SIZE, PROMOTIONS_LIMIT } from './CatalogService';
 import type { CatalogService } from './CatalogService';
 
 // ТИМЧАСОВО, поки немає бекенду. Правила відбору й сортування — як у SRS,
@@ -25,7 +32,8 @@ const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const AVAILABILITY_ORDER: Record<Availability, number> = { in_stock: 0, expected: 1, out_of_stock: 2 };
 const byName = (a: MockProduct, b: MockProduct) => a.name.localeCompare(b.name, 'uk');
-const priceOf = (product: MockProduct) => product.price ?? 0;
+// фільтр і сортування — за ціною, яку покупець платить зараз (під час акції — акційною)
+const priceOf = (product: MockProduct) => effectivePrice(product);
 
 const notFound = (what: string) =>
   new ApiError(404, 'NOT_FOUND', `${what} не знайдено. Перевірте адресу або поверніться до каталогу.`);
@@ -105,6 +113,7 @@ export class MockCatalogService implements CatalogService {
     if (priceMin !== undefined) list = list.filter((product) => priceOf(product) >= priceMin);
     if (priceMax !== undefined) list = list.filter((product) => priceOf(product) <= priceMax);
     if (query.inStockOnly) list = list.filter((product) => product.availability === 'in_stock');
+    if (query.promoOnly) list = list.filter(hasActivePromo);
 
     for (const [id, values] of Object.entries(query.characteristics)) {
       if (!values.length) continue;
@@ -120,6 +129,17 @@ export class MockCatalogService implements CatalogService {
       page: query.page,
       pageSize: PAGE_SIZE,
     };
+  }
+
+  async getPromotions(): Promise<ProductSummary[]> {
+    await delay(200);
+    const state = loadCatalog();
+    // видимі товари з діючою акцією: спершу більша знижка
+    return this.visibleProducts(state)
+      .filter(hasActivePromo)
+      .map(toProductSummary)
+      .sort((a, b) => b.oldPrice! / b.price - a.oldPrice! / a.price || a.name.localeCompare(b.name, 'uk'))
+      .slice(0, PROMOTIONS_LIMIT);
   }
 
   async getProduct(id: number): Promise<ProductDetails> {

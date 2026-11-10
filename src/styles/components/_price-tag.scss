@@ -1,0 +1,30 @@
+@use '../abstracts' as *;
+
+// Блок: ціна; під час акції — нова, закреслена стара й бейдж знижки
+.price-tag {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+
+  &__current--promo {
+    color: $color-promo;
+  }
+
+  &__old {
+    font-size: 0.8em;
+    font-weight: 400;
+    color: $color-gray;
+  }
+
+  &__badge {
+    align-self: center;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background-color: $color-promo;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: $color-white;
+  }
+}

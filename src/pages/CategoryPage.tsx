@@ -78,6 +78,7 @@ function CategoryProducts({ category }: { category: Category }) {
       priceMin: undefined,
       priceMax: undefined,
       inStockOnly: false,
+      promoOnly: false,
       characteristics: {},
     });
 

@@ -150,7 +150,7 @@
 // Фільтри товарів: пошук на всю ширину, далі вибір
 .admin-filters {
   &__fields--products {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
 
     .admin-filters__field--wide {
       grid-column: 1 / -1;
@@ -387,4 +387,13 @@
   @include respond-down($bp-phone) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+// Акція в списку товарів адмінки
+.admin-products__promo {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: $color-promo;
 }

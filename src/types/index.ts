@@ -11,12 +11,6 @@ export interface SocialLink {
   icon: string;
 }
 
-export interface Slide {
-  id: number;
-  image: string;
-  alt: string;
-}
-
 /** Сторінка списку з сервера: товари 21–40 із 137 тощо */
 export interface Page<T> {
   items: T[];
@@ -70,7 +64,12 @@ export interface CategoryFilters {
 export interface ProductSummary {
   id: number;
   name: string;
+  /** Ціна, за якою зараз продають: під час акції — акційна */
   price: number;
+  /** Звичайна ціна, якщо діє акція (її показують закресленою); інакше null */
+  oldPrice?: number | null;
+  /** Останній день акції 'YYYY-MM-DD' за київським часом; null — без кінцевої дати */
+  promoUntil?: string | null;
   availability: Availability;
   /** Власне фото, інакше фото з прайсу Katran; null — показуємо заглушку (FUN-10) */
   imageUrl: string | null;
@@ -111,6 +110,8 @@ export interface ProductQuery {
   inStockOnly: boolean;
   /** id характеристики → обрані значення (у межах одного фільтра — «або») */
   characteristics: Record<number, string[]>;
+  /** Лише товари з діючою акцією */
+  promoOnly?: boolean;
 }
 
 // ===== Кошик =====
@@ -365,6 +366,9 @@ export interface AdminProductListItem {
   manufacturerName: string | null;
   price: number | null;
   purchasePrice: number | null;
+  /** Акційна ціна, якщо акція діє зараз */
+  promoPrice: number | null;
+  promoUntil: string | null;
   availability: Availability;
   published: boolean;
   imageUrl: string | null;
@@ -381,6 +385,8 @@ export interface AdminProductQuery {
   published?: boolean;
   availability?: Availability;
   source?: ProductSource;
+  /** true — лише з діючою акцією */
+  promo?: boolean;
   page: number;
 }
 
@@ -406,6 +412,11 @@ export interface AdminProduct {
   /** Власне фото важливіше за фото з прайсу (FUN-10) */
   ownImageUrl: string | null;
   supplierImageUrl: string | null;
+  /** Акційна ціна (менша за звичайну) і останній день акції; null — акції немає / без дати */
+  promoPrice: number | null;
+  promoUntil: string | null;
+  /** Акція діє зараз: є акційна ціна, вона менша за звичайну й дата не минула */
+  promoActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -424,6 +435,10 @@ export interface ProductInput {
   assemblyCountry: string;
   assemblyCity: string;
   values: Record<number, CharacteristicValue>;
+  /** Акційна ціна; null — без акції */
+  promoPrice: number | null;
+  /** Останній день акції 'YYYY-MM-DD' включно; null — поки не приберуть */
+  promoUntil: string | null;
 }
 
 // ===== Адмінка: клієнти (UC-ADM-CLI-01…04) =====

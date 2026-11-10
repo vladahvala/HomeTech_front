@@ -5,9 +5,9 @@ import type { AddToCartResult } from '../context/CartContext';
 import { useCanShop } from '../hooks/useCanShop';
 import { useTemporaryValue } from '../hooks/useTemporaryValue';
 import type { ProductSummary } from '../types';
-import { formatPrice } from '../utils/format';
 import { canOrder } from '../utils/labels';
 import AvailabilityBadge from './AvailabilityBadge';
+import PriceTag from './PriceTag';
 import ProductImage from './ProductImage';
 
 export default function ProductCard({ product }: { product: ProductSummary }) {
@@ -37,7 +37,9 @@ export default function ProductCard({ product }: { product: ProductSummary }) {
         </Link>
       </h3>
       <AvailabilityBadge availability={product.availability} />
-      <p className="product-card__price">{formatPrice(product.price)}</p>
+      <p className="product-card__price">
+        <PriceTag price={product.price} oldPrice={product.oldPrice} />
+      </p>
       {canShop && (
         <button
           className="product-card__button cart-button"

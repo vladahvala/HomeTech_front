@@ -6,9 +6,10 @@ import type {
   Page,
   ProductInput,
 } from '../../types';
+import { kyivToday } from '../../utils/dates';
 import { validatePhoto, validateProductInput } from '../../validation/rules';
 import { ApiError } from '../ApiError';
-import { loadCatalog, nextId, productImage, saveCatalog } from '../mock/catalogStore';
+import { hasActivePromo, loadCatalog, nextId, productImage, saveCatalog } from '../mock/catalogStore';
 import type { CatalogState, StoredProduct } from '../mock/catalogStore';
 import type { AdminProductService } from './AdminProductService';
 import { delay, notFound, requireAdmin, sameName } from './mockAdmin';
@@ -43,6 +44,9 @@ function toAdminProduct(state: CatalogState, product: StoredProduct): AdminProdu
     supplierCode: product.supplierCode,
     ownImageUrl: product.ownImageUrl,
     supplierImageUrl: product.supplierImageUrl,
+    promoPrice: product.promoPrice ?? null,
+    promoUntil: product.promoUntil ?? null,
+    promoActive: hasActivePromo(product),
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
   };
@@ -60,6 +64,8 @@ function toListItem(state: CatalogState, product: StoredProduct): AdminProductLi
     manufacturerName: state.manufacturers.find((item) => item.id === product.manufacturerId)?.name ?? null,
     price: product.price,
     purchasePrice: product.purchasePrice,
+    promoPrice: hasActivePromo(product) ? product.promoPrice : null,
+    promoUntil: hasActivePromo(product) ? (product.promoUntil ?? null) : null,
     availability: product.availability,
     published: product.published,
     imageUrl: productImage(product),
@@ -81,7 +87,7 @@ function missingForPublish(product: Pick<StoredProduct, 'categoryId' | 'price'>)
  */
 function applyInput(state: CatalogState, input: ProductInput) {
   const template = state.characteristics.filter((item) => item.categoryId === input.categoryId);
-  const errors = validateProductInput(input, template);
+  const errors = validateProductInput(input, template, kyivToday());
 
   if (input.categoryId !== null) {
     const category = state.categories.find((item) => item.id === input.categoryId);
@@ -125,6 +131,8 @@ function applyInput(state: CatalogState, input: ProductInput) {
     assemblyCountry: text(input.assemblyCountry),
     assemblyCity: text(input.assemblyCity),
     values,
+    promoPrice: input.promoPrice,
+    promoUntil: input.promoPrice === null ? null : input.promoUntil || null,
   };
 }
 
@@ -181,6 +189,7 @@ export class MockAdminProductService implements AdminProductService {
       .filter((product) => query.published === undefined || product.published === query.published)
       .filter((product) => !query.availability || product.availability === query.availability)
       .filter((product) => !query.source || (product.supplierCode ? 'katran' : 'manual') === query.source)
+      .filter((product) => query.promo === undefined || hasActivePromo(product) === query.promo)
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt) || b.id - a.id);
 
     const start = (query.page - 1) * PAGE_SIZE;

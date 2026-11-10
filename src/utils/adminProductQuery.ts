@@ -17,6 +17,7 @@ export function parseAdminProductQuery(search: string): AdminProductQuery {
   const published = params.get('published');
   const availability = params.get('availability') as Availability | null;
   const source = params.get('source') as ProductSource | null;
+  const promo = params.get('promo');
 
   return {
     search: params.get('search')?.trim() || undefined,
@@ -25,6 +26,7 @@ export function parseAdminProductQuery(search: string): AdminProductQuery {
     published: published === 'true' ? true : published === 'false' ? false : undefined,
     availability: availability && AVAILABILITY.includes(availability) ? availability : undefined,
     source: source && SOURCES.includes(source) ? source : undefined,
+    promo: promo === 'true' ? true : promo === 'false' ? false : undefined,
     page: positiveInt(params.get('page')) ?? 1,
   };
 }
@@ -37,6 +39,7 @@ export function toAdminProductParams(query: AdminProductQuery): URLSearchParams 
   if (query.published !== undefined) params.set('published', String(query.published));
   if (query.availability) params.set('availability', query.availability);
   if (query.source) params.set('source', query.source);
+  if (query.promo !== undefined) params.set('promo', String(query.promo));
   if (query.page > 1) params.set('page', String(query.page));
   return params;
 }

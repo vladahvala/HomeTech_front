@@ -61,6 +61,7 @@
 | `GET /api/catalog/categories/:slug/filters` | `CategoryFilters` — варіанти фільтрів категорії |
 | `GET /api/catalog/products?…` | `Page<ProductSummary>` |
 | `GET /api/catalog/products/:id` | `ProductDetails`; `404 NOT_FOUND`, якщо товару немає або він прихований |
+| `GET /api/catalog/promotions` | `ProductSummary[]` — видимі товари з діючою акцією для каруселі на головній: спершу більша знижка, до 12 |
 
 ### Параметри `GET /api/catalog/products`
 
@@ -75,6 +76,7 @@
 | `m` (кілька) | `m=3&m=7` | id виробників |
 | `pmin`, `pmax` | `1000` | діапазон ціни, грн |
 | `stock` | `1` | лише «В наявності» |
+| `promo` | `1` | лише товари з діючою акцією (сторінка «Акції», фільтр «Лише акційні») |
 | `c{id}` (кілька) | `c302=Скло&c302=Пластик` | значення характеристики з id 302 |
 
 Різні фільтри поєднуються умовою «і», варіанти одного фільтра — «або» (UC-CAT-02).
@@ -83,7 +85,12 @@
 
 ```ts
 Category        { id, name, slug, parentId: number | null, order }
-ProductSummary  { id, name, price, availability: 'in_stock' | 'expected' | 'out_of_stock', imageUrl: string | null }
+ProductSummary  {
+  id, name, availability: 'in_stock' | 'expected' | 'out_of_stock', imageUrl: string | null,
+  price,                       // ціна, за якою продають зараз: під час акції — акційна
+  oldPrice: number | null,     // звичайна ціна, якщо діє акція (фронт показує її закресленою), інакше null
+  promoUntil: string | null    // останній день акції 'YYYY-MM-DD' або null
+}
 Page<T>         { items: T[], total, page, pageSize }
 CategoryFilters {
   manufacturers: { id, name, country }[],      // лише ті, що є в категорії
@@ -101,6 +108,8 @@ ProductDetails = ProductSummary & {
 ```
 
 - `imageUrl` — власне фото, інакше фото з прайсу Katran, інакше `null` (фронт покаже заглушку, FUN-10).
+- **Акція діє**, якщо в товару є `promoPrice`, вона менша за звичайну ціну й `promoUntil` порожня або не раніше сьогоднішньої дати за Києвом. Тоді `price` = акційна, `oldPrice` = звичайна. Фільтр і сортування за ціною (`pmin`, `pmax`, `price_asc`…) і `priceMin`/`priceMax` у фільтрах — за `price`, тобто за ціною зі знижкою.
+- Звірка кошика й оформлення замовлення порівнюють і фіксують саме `price`: якщо акція почалась чи закінчилась, поки Клієнт оформлював, це звичайна зміна ціни (`CART_CHANGED`).
 - Повний перелік типів — `src/types/index.ts`.
 
 ## Кошик і оформлення замовлення (UC-CRT-03, UC-ORD-01)
@@ -245,13 +254,15 @@ AdminOrder extends Order {
 - `search` — кожне слово в назві, артикулі або коді постачальника, без урахування регістру;
 - `category` — id категорії (з її підкатегоріями) або `none` — товари без категорії;
 - `manufacturer` — id; `published` — `true`/`false`; `availability` — `in_stock`/`expected`/`out_of_stock`;
-- `source` — `katran` (є код постачальника) або `manual`.
+- `source` — `katran` (є код постачальника) або `manual`;
+- `promo` — `true` (діє акція) або `false` (без діючої акції).
 
 ```ts
 AdminProductListItem {
   id, name, article: string | null, supplierCode: string | null, source: 'katran' | 'manual',
   categoryId: number | null, categoryName: string | null, manufacturerName: string | null,
   price: number | null, purchasePrice: number | null, availability, published: boolean,
+  promoPrice: number | null, promoUntil: string | null /* лише якщо акція діє зараз */,
   imageUrl: string | null /* власне, інакше з прайсу */, updatedAt: ISO
 }
 AdminProduct {
@@ -259,10 +270,12 @@ AdminProduct {
   article, price, purchasePrice, warrantyMonths: number | null, description,
   assemblyCountry, assemblyCity, values: Record<characteristicId, number | string | boolean>,
   published, source, supplierCode, ownImageUrl: string | null, supplierImageUrl: string | null,
+  promoPrice: number | null, promoUntil: string | null, promoActive: boolean /* акція діє зараз */,
   createdAt, updatedAt
 }
 ProductInput {
   name /* 3–200 */, availability, categoryId: number | null,
+  promoPrice: number | null /* акційна ціна, менша за price */, promoUntil: string | null /* 'YYYY-MM-DD', не раніше сьогодні */,
   manufacturerName: string /* '' — без виробника; нова назва — новий виробник */,
   article: string, price: number | null /* 0,01–9 999 999,99 */, warrantyMonths: number | null /* 0–120 */,
   description /* до 5000 */, assemblyCountry, assemblyCity,
@@ -276,6 +289,7 @@ ProductInput {
 - **Значення**: `number` — число, `boolean` — `true`/`false`, `enum` — один з `options`, `text` — до 200 символів. Помилки — у `fields["value-<id>"]`. Характеристики необов'язкові.
 - **Виробник** шукається за назвою без урахування регістру; якщо такого немає — створюється з `country: null`.
 - Якщо після редагування в товару немає категорії чи ціни — `published` стає `false`.
+- **Акція**: `promoPrice` — від 0,01, менша за `price` (інакше `fields.promoPrice`); `promoUntil` без `promoPrice` — помилка `fields.promoPrice`; дата раніше сьогодні — `fields.promoUntil`. Обидва `null` — акції немає. Імпорт акцію не змінює; якщо нова ціна з прайсу стала меншою за акційну, акція просто перестає діяти.
 - **Видалення** — позначка `deleted`: товар зникає з каталогу, пошуку, цього списку; позиції замовлень зберігаються; імпорт його пропускає (FUN-08). У звірці кошика такий товар — `product: null`.
 - **Фото**: показується власне, інакше з прайсу, інакше заглушка (FUN-10). Імпорт оновлює лише фото з прайсу.
 - Для товару з прайсу імпорт оновлює ціну, закупівельну ціну, наявність, гарантію й фото з прайсу; решту полів (зокрема змінені Адміністратором) зберігає.

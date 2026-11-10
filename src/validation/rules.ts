@@ -235,6 +235,8 @@ export function validateCharacteristicValue(
 export function validateProductInput(
   input: ProductInput,
   characteristics: Pick<Characteristic, 'id' | 'type' | 'options'>[],
+  /** Сьогодні за Києвом — щоб не прийняти акцію, що вже закінчилась */
+  today?: string,
 ): FieldErrors {
   const errors: FieldErrors = {};
   const name = input.name.trim();
@@ -256,11 +258,37 @@ export function validateProductInput(
   ];
   for (const [field, message] of checks) if (message) errors[field] = message;
 
+  Object.assign(errors, validatePromo(input, today));
+
   for (const characteristic of characteristics) {
     const value = input.values[characteristic.id];
     if (value === undefined) continue; // характеристики необов'язкові
     const message = validateCharacteristicValue(characteristic, value);
     if (message) errors[`value-${characteristic.id}`] = message;
+  }
+  return errors;
+}
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Акція: ціна менша за звичайну, дата закінчення — сьогодні або пізніше */
+export function validatePromo(
+  input: Pick<ProductInput, 'price' | 'promoPrice' | 'promoUntil'>,
+  today?: string,
+): FieldErrors {
+  const errors: FieldErrors = {};
+  const { price, promoPrice, promoUntil } = input;
+  if (promoPrice === null) {
+    if (promoUntil) errors.promoPrice = 'Вкажіть акційну ціну або приберіть дату закінчення акції.';
+    return errors;
+  }
+  const priceError = validatePrice(promoPrice);
+  if (priceError) errors.promoPrice = priceError.replace('Ціна', 'Акційна ціна').replace('У ціні', 'В акційній ціні');
+  else if (price === null || !Number.isFinite(price)) errors.promoPrice = 'Спершу вкажіть звичайну ціну — акційна має бути меншою за неї.';
+  else if (promoPrice >= price) errors.promoPrice = 'Акційна ціна має бути меншою за звичайну.';
+  if (promoUntil) {
+    if (!DATE_PATTERN.test(promoUntil)) errors.promoUntil = 'Оберіть дату закінчення акції.';
+    else if (today && promoUntil < today) errors.promoUntil = 'Ця дата вже минула. Оберіть сьогоднішню або пізнішу.';
   }
   return errors;
 }

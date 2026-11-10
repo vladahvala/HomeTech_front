@@ -29,6 +29,7 @@ import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import ProductPage from './pages/ProductPage';
+import PromotionsPage from './pages/PromotionsPage';
 import RegisterPage from './pages/RegisterPage';
 import SearchPage from './pages/SearchPage';
 
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/catalog/:slug" element={<CategoryPage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/promotions" element={<PromotionsPage />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
             {/* оформлення саме показує «Увійдіть» гостю й повідомлення адміну (А1, А2) */}

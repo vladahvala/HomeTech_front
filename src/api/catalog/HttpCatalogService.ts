@@ -33,6 +33,10 @@ export class HttpCatalogService implements CatalogService {
     return this.api.get<Page<ProductSummary>>(`/catalog/products?${params}`);
   }
 
+  getPromotions(): Promise<ProductSummary[]> {
+    return this.api.get<ProductSummary[]>('/catalog/promotions');
+  }
+
   getProduct(id: number): Promise<ProductDetails> {
     return this.api.get<ProductDetails>(`/catalog/products/${id}`);
   }

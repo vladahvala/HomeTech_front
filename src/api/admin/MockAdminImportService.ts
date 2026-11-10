@@ -125,6 +125,8 @@ export class MockAdminImportService implements AdminImportService {
         ownImageUrl: null,
         supplierImageUrl: row.photo,
         values: {},
+        promoPrice: null,
+        promoUntil: null,
       };
       state.products.push(product);
       added += 1;
